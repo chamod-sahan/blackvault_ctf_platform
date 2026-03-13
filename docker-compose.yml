@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ctf-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1122
+      MYSQL_DATABASE: ctf_plarform
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 1122
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - ctf-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: ctf-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - ctf-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ctf-backend
+    environment:
+      DATABASE_URL: mysql://root:1122@mysql:3306/ctf_plarform
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRES_IN: 7d
+      FRONTEND_URL: http://localhost:3000
+      PORT: 4000
+      NODE_ENV: development
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./uploads:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ctf-network
+    command: sh -c "npx prisma generate && npx prisma db push && npm run dev"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ctf-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      BACKEND_URL: http://backend:4000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    networks:
+      - ctf-network
+    command: npm run dev
+
+  nginx:
+    image: nginx:alpine
+    container_name: ctf-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./uploads:/uploads:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - ctf-network
+
+volumes:
+  mysql_data:
+
+networks:
+  ctf-network:
+    driver: bridge

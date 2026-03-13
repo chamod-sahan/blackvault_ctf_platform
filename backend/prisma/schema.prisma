@@ -1,0 +1,316 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id           String        @id @default(uuid())
+  username     String        @unique
+  email        String        @unique
+  passwordHash String
+  role         Role          @default(USER)
+  status       UserStatus    @default(ACTIVE)
+  bannedUntil  DateTime?
+  points       Int           @default(0)
+  country      String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  submissions  Submission[]
+  solves       Solve[]
+  teamMember   TeamMember?
+  pathProgress UserPathModuleProgress[]
+  academyProgress UserAcademyModuleProgress[]
+  userFlags     UserChallengeFlag[]
+  ctfRegistrations CtfRegistration[]
+}
+
+// --- Learning Paths (Guided) ---
+model LearningPath {
+  id          String   @id @default(uuid())
+  title       String   @unique
+  description String   @db.Text
+  imageUrl    String?
+  difficulty  Difficulty
+  points      Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  modules     PathModule[]
+}
+
+model PathModule {
+  id             String       @id @default(uuid())
+  title          String
+  content        String       @db.LongText
+  type           ModuleType   @default(READING)
+  order          Int
+  learningPathId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  path           LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  questions      PathQuestion[]
+  userProgress   UserPathModuleProgress[]
+}
+
+model PathQuestion {
+  id        String   @id @default(uuid())
+  text      String   @db.Text
+  answer    String
+  hint      String?
+  moduleId  String
+  createdAt DateTime @default(now())
+
+  module    PathModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+}
+
+model UserPathModuleProgress {
+  id        String   @id @default(uuid())
+  userId    String
+  moduleId  String
+  completed Boolean  @default(false)
+  solvedAt  DateTime @default(now())
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module    PathModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+}
+
+// --- Academy (Standalone) ---
+model AcademyModule {
+  id          String   @id @default(uuid())
+  title       String   @unique
+  description String   @db.Text
+  content     String   @db.LongText
+  category    String   // Web, Pwn, etc.
+  difficulty  Difficulty
+  points      Int      @default(0)
+  type        ModuleType @default(READING)
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  questions   AcademyQuestion[]
+  userProgress UserAcademyModuleProgress[]
+}
+
+model AcademyQuestion {
+  id        String   @id @default(uuid())
+  text      String   @db.Text
+  answer    String
+  hint      String?
+  moduleId  String
+  createdAt DateTime @default(now())
+
+  module    AcademyModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+}
+
+model UserAcademyModuleProgress {
+  id        String   @id @default(uuid())
+  userId    String
+  moduleId  String
+  completed Boolean  @default(false)
+  solvedAt  DateTime @default(now())
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module    AcademyModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+}
+
+enum ModuleType {
+  READING
+  LAB
+  VIDEO
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model SystemSetting {
+  id    String @id @default(uuid())
+  key   String @unique
+  value String
+}
+
+model CtfEvent {
+  id           String   @id @default(uuid())
+  title        String   @unique
+  description  String   @db.Text
+  status       String   @default("UPCOMING") // LIVE, UPCOMING, COMPLETED
+  prize        String?
+  difficulty   Difficulty
+  startTime    DateTime
+  endTime      DateTime
+  bannerUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  registrations CtfRegistration[]
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+  TEMP_BANNED
+}
+
+model Log {
+  id        String   @id @default(uuid())
+  level     LogLevel @default(INFO)
+  message   String   @db.Text
+  source    String?
+  userId    String?
+  timestamp DateTime @default(now())
+}
+
+enum LogLevel {
+  INFO
+  WARN
+  ERROR
+  DEBUG
+}
+
+model Challenge {
+  id            String       @id @default(uuid())
+  title         String       @unique
+  description   String       @db.Text
+  category      String
+  type          ChallengeType @default(CHALLENGE)
+  os            OperatingSystem?
+  difficulty    Difficulty
+  points        Int
+  flag          String
+  flagHash      String
+  isDynamic     Boolean      @default(false)
+  flagTemplate  String?      @db.Text
+  dockerImage   String?
+  attachmentUrl String?
+  attachmentName String?
+  isExpired     Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  
+  submissions   Submission[]
+  solves        Solve[]
+  userFlags     UserChallengeFlag[]
+}
+
+model UserChallengeFlag {
+  id          String    @id @default(uuid())
+  userId      String
+  challengeId String
+  flag        String
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@index([userId])
+  @@index([challengeId])
+}
+
+enum ChallengeType {
+  CHALLENGE
+  MACHINE
+}
+
+enum OperatingSystem {
+  WINDOWS
+  LINUX
+  OTHER
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+  EXPERT
+}
+
+model Submission {
+  id              String     @id @default(uuid())
+  userId          String
+  challengeId     String
+  submittedFlag   String
+  correct         Boolean
+  createdAt       DateTime   @default(now())
+  
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge       Challenge  @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([challengeId])
+}
+
+model Solve {
+  id          String     @id @default(uuid())
+  userId      String
+  challengeId String
+  points      Int
+  solvedAt    DateTime   @default(now())
+  
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge   Challenge  @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, challengeId])
+  @@index([userId])
+  @@index([challengeId])
+}
+
+model Team {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  members     TeamMember[]
+  ctfRegistrations CtfRegistration[]
+}
+
+model CtfRegistration {
+  id        String   @id @default(uuid())
+  eventId   String
+  userId    String?
+  teamId    String?
+  type      RegistrationType
+  createdAt DateTime @default(now())
+
+  event     CtfEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team      Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId], name: "solo_registration")
+  @@unique([eventId, teamId], name: "team_registration")
+}
+
+enum RegistrationType {
+  SOLO
+  TEAM
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  teamId    String
+  role      TeamRole @default(MEMBER)
+  joinedAt  DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  @@index([teamId])
+}
+
+enum TeamRole {
+  LEADER
+  MEMBER
+}
