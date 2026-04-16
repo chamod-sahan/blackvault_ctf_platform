@@ -14,7 +14,14 @@ import {
   Activity,
   Award,
   ChevronRight,
-  Loader2
+  Loader2,
+  Copy,
+  Check,
+  Zap,
+  KeyRound,
+  Eye,
+  X,
+  FileText
 } from 'lucide-react';
 
 interface ChallengeDetail {
@@ -22,6 +29,7 @@ interface ChallengeDetail {
   title: string;
   description: string;
   category: string;
+  type: string;
   difficulty: string;
   points: number;
   solved: boolean;
@@ -30,6 +38,8 @@ interface ChallengeDetail {
   dockerImage?: string;
   attachmentUrl?: string;
   attachmentName?: string;
+  writeupUrl?: string;
+  writeupName?: string;
 }
 
 const difficultyConfig: Record<string, { color: string, segments: number }> = {
@@ -47,6 +57,8 @@ export default function ChallengeDetailPage() {
   const [flag, setFlag] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [copiedFlag, setCopiedFlag] = useState(false);
+  const [showWriteup, setShowWriteup] = useState(false);
 
   useEffect(() => {
     const fetchChallenge = async () => {
@@ -205,8 +217,8 @@ export default function ChallengeDetailPage() {
                 </div>
               </div>
 
-              {challenge.attachmentUrl && (
-                <div className="mt-8 pt-8 border-t border-htb-border">
+              <div className="mt-8 pt-8 border-t border-htb-border flex gap-4 flex-wrap">
+                {challenge.attachmentUrl && (
                   <a
                     href={challenge.attachmentUrl}
                     download={challenge.attachmentName}
@@ -215,8 +227,18 @@ export default function ChallengeDetailPage() {
                     <Download className="w-5 h-5 text-primary group-hover:animate-bounce" />
                     DOWNLOAD_ASSETS
                   </a>
-                </div>
-              )}
+                )}
+
+                {challenge.writeupUrl && (
+                  <button
+                    onClick={() => setShowWriteup(true)}
+                    className="htb-button-secondary inline-flex items-center gap-3 w-auto group shadow-glow-green border-purple-500/50 text-purple-500 hover:bg-purple-500/10 hover:text-purple-400"
+                  >
+                    <Eye className="w-5 h-5 group-hover:animate-pulse" />
+                    VIEW_INTEL_REPORT
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -224,7 +246,68 @@ export default function ChallengeDetailPage() {
         {/* Flag Submission */}
         <div className="space-y-6">
 
+          {/* Dynamic Flag Display — only shown for dynamic challenges */}
+          {challenge.isDynamic && challenge.userFlag && (
+            <div className="htb-card border-primary/30 bg-gradient-to-br from-primary/5 to-transparent relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
+              {/* Animated top border */}
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse" />
 
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 relative">
+                  <KeyRound className="w-5 h-5 text-primary" />
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-pulse" />
+                </div>
+                <div>
+                  <h3 className="font-bold tracking-tight uppercase text-sm flex items-center gap-2">
+                    <Zap className="w-3.5 h-3.5 text-primary" />
+                    Your_Unique_Flag
+                  </h3>
+                  <p className="text-[9px] font-mono text-muted-foreground uppercase tracking-widest">
+                    Dynamic_Flag_Protocol // Unique Per Operator
+                  </p>
+                </div>
+              </div>
+
+              {/* Terminal flag display */}
+              <div className="bg-black/60 rounded-xl border border-primary/15 overflow-hidden mb-4">
+                <div className="flex items-center gap-2 px-4 py-2.5 border-b border-primary/10 bg-primary/5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+                  <span className="ml-2 text-[9px] font-mono text-primary/40 uppercase tracking-widest">
+                    operator_flag.txt
+                  </span>
+                </div>
+                <div className="p-4 flex items-center justify-between gap-3 group">
+                  <code className="font-mono text-sm text-primary font-bold tracking-wider flex-1 break-all">
+                    {challenge.userFlag}
+                  </code>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(challenge.userFlag!);
+                      setFlag(challenge.userFlag!);
+                      setCopiedFlag(true);
+                      setTimeout(() => setCopiedFlag(false), 2000);
+                    }}
+                    title="Copy flag to clipboard"
+                    className="flex-shrink-0 p-2.5 rounded-lg border transition-all duration-200
+                      border-primary/20 bg-primary/5 text-primary/60
+                      hover:bg-primary/20 hover:border-primary/50 hover:text-primary
+                      active:scale-95"
+                  >
+                    {copiedFlag
+                      ? <Check className="w-4 h-4 text-primary" />
+                      : <Copy className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <p className="text-[9px] font-mono text-muted-foreground/60 uppercase tracking-wider leading-relaxed">
+                ⚡ This flag is cryptographically derived from your operator ID. Sharing it will not help others — their flag is different.
+              </p>
+            </div>
+          )}
 
           <div className="htb-card border-primary/20 bg-primary/5 shadow-glow-green">
             <div className="flex items-center gap-3 mb-6">
@@ -299,6 +382,66 @@ export default function ChallengeDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Writeup Modal */}
+      {showWriteup && challenge.writeupUrl && (
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex flex-col animate-in fade-in duration-300" onContextMenu={(e) => e.preventDefault()}>
+          <div className="flex items-center justify-between p-4 border-b border-purple-500/20 bg-background/50">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-purple-500/10 border border-purple-500/30 rounded-lg flex items-center justify-center">
+                <FileText className="w-5 h-5 text-purple-500" />
+              </div>
+              <div>
+                <h2 className="text-purple-500 font-bold uppercase tracking-widest text-sm flex items-center gap-2">
+                  <Eye className="w-4 h-4" /> INTEL_REPORT_VIEWER
+                </h2>
+                <p className="text-[10px] text-muted-foreground font-mono truncate max-w-sm">
+                  {challenge.writeupName} // CLASSIFIED
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-[9px] font-mono text-purple-500/40 uppercase tracking-widest border border-purple-500/20 px-2 py-1 rounded bg-purple-500/5 hidden sm:block">
+                SECURE_VIEWER_ENCLAVE_ACTIVE
+              </span>
+              <button
+                onClick={() => setShowWriteup(false)}
+                className="w-10 h-10 flex items-center justify-center hover:bg-red-500/10 text-muted-foreground hover:text-red-500 rounded-lg transition-colors"
+                title="Close Viewer"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1 relative bg-black/50 overflow-hidden group">
+            {/* Overlay to catch and prevent right clicks and dragging across the iframe */}
+            <div className="absolute inset-0 z-10 pointer-events-none group-hover:bg-purple-500/5 transition-colors duration-1000 mix-blend-overlay" />
+            
+            <iframe
+              src={`${challenge.writeupUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+              className="w-full h-full border-none"
+              title="Writeup Viewer"
+              style={{
+                pointerEvents: challenge.writeupUrl.toLowerCase().endsWith('.pdf') ? 'auto' : 'none'
+              }}
+              sandbox="allow-same-origin allow-scripts"
+            />
+            
+            {!challenge.writeupUrl.toLowerCase().endsWith('.pdf') && (
+               <div 
+                 className="absolute inset-0 flex items-center justify-center -z-10"
+                 style={{ 
+                   backgroundImage: `url(${challenge.writeupUrl})`, 
+                   backgroundSize: 'contain', 
+                   backgroundPosition: 'center', 
+                   backgroundRepeat: 'no-repeat' 
+                 }} 
+               />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

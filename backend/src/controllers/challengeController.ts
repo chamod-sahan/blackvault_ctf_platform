@@ -61,6 +61,8 @@ export const challengeController = {
           isExpired: true,
           attachmentUrl: true,
           attachmentName: true,
+          writeupUrl: true,
+          writeupName: true,
           createdAt: true,
         },
         orderBy: [{ points: 'asc' }, { createdAt: 'desc' }],
@@ -107,6 +109,8 @@ export const challengeController = {
           dockerImage: true,
           attachmentUrl: true,
           attachmentName: true,
+          writeupUrl: true,
+          writeupName: true,
           createdAt: true,
           flagTemplate: true,
         },
@@ -253,6 +257,30 @@ export const challengeController = {
       res.status(500).json({ error: 'Internal server error' });
     }
   },
+
+  async uploadWriteup(req: AuthRequest, res: Response) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      const { challengeId } = req.body;
+
+      const challenge = await prisma.challenge.update({
+        where: { id: challengeId },
+        data: {
+          writeupUrl: `/uploads/${req.file.filename}`,
+          writeupName: req.file.originalname,
+        },
+      });
+
+      res.json({ challenge, fileUrl: `/uploads/${req.file.filename}` });
+    } catch (error) {
+      console.error('Upload writeup error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+
 
   async submitFlag(req: AuthRequest, res: Response) {
     try {

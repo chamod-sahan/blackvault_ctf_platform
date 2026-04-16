@@ -34,6 +34,7 @@ router.post('/', authenticate, requireAdmin, challengeController.createChallenge
 router.put('/:id', authenticate, requireAdmin, challengeController.updateChallenge);
 router.delete('/:id', authenticate, requireAdmin, challengeController.deleteChallenge);
 router.post('/upload', authenticate, requireAdmin, upload.single('file'), challengeController.uploadAttachment);
+router.post('/upload-writeup', authenticate, requireAdmin, upload.single('file'), challengeController.uploadWriteup);
 router.post('/submit', authenticate, challengeController.submitFlag);
 
 export default router;

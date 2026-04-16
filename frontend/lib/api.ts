@@ -51,6 +51,10 @@ export const challengeApi = {
     api.post('/challenges/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
+  uploadWriteup: (formData: FormData) =>
+    api.post('/challenges/upload-writeup', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
 };
 
 export const educationApi = {

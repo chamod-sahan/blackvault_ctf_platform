@@ -194,6 +194,8 @@ model Challenge {
   dockerImage   String?
   attachmentUrl String?
   attachmentName String?
+  writeupUrl    String?
+  writeupName   String?
   isExpired     Boolean      @default(false)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
