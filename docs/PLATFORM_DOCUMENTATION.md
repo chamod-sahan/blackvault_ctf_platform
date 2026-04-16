@@ -190,11 +190,13 @@ ctf-platform/
 │   │   │   ├── users/
 │   │   │   ├── challenges/
 │   │   │   ├── academy/
+│   │   │   ├── writeups/             # Manage challenge writeups
 │   │   │   └── ctf-events/
 │   │   ├── challenges/               # Challenge list + detail
 │   │   ├── academy/                  # Standalone modules
 │   │   ├── learning-paths/           # Guided roadmaps
 │   │   ├── teams/                    # Team management
+│   │   ├── writeups/                 # View public writeups
 │   │   ├── leaderboard/              # Live rankings
 │   │   ├── dashboard/                # User home
 │   │   ├── machines/                 # Machine challenges
@@ -234,11 +236,11 @@ ctf-platform/
 
 | Model | Key Fields | Description |
 |---|---|---|
-| `User` | id, username, email, role, status, points | Platform participant |
-| `Challenge` | id, title, category, type, difficulty, flag | Individual task/machine |
-| `Submission` | id, userId, challengeId, correct | Flag attempt record |
+| `User` | id, username, email, role, status, country, points | Platform participant |
+| `Challenge` | id, title, category, type, isDynamic, points, attachmentUrl, writeupUrl | Individual task/machine |
+| `Submission` | id, userId, challengeId, submittedFlag, correct | Flag attempt record |
 | `Solve` | id, userId, challengeId, points, solvedAt | Confirmed correct solve |
-| `Team` | id, name | Collaborative group |
+| `Team` | id, name, createdAt | Collaborative group |
 | `TeamMember` | userId, teamId, role | User-Team join record |
 
 ## 5.2 Education Models
@@ -247,10 +249,18 @@ ctf-platform/
 |---|---|---|
 | `LearningPath` | id, title, difficulty | Guided learning roadmap |
 | `PathModule` | id, title, content, type, order | Individual roadmap lesson |
-| `AcademyModule` | id, title, content, category, type | Standalone lesson |
-| `AcademyQuestion` | id, text, answer, hint | Quiz question for a module |
+| `AcademyModule` | id, title, difficulty, points, type | Standalone lesson |
+| `AcademyQuestion` | id, text, answer, hint, moduleId | Quiz question for a module |
 
-## 5.3 Events & Systems
+## 5.3 Progress & Dynamic Flags
+
+| Model | Key Fields | Description |
+|---|---|---|
+| `UserPathModuleProgress` | userId, moduleId, completed | Tracks user progress in learning paths |
+| `UserAcademyModuleProgress` | userId, moduleId, completed | Tracks user progress in academy modules |
+| `UserChallengeFlag` | userId, challengeId, flag | Stores individual flags for dynamic challenges |
+
+## 5.4 Events & Systems
 
 | Model | Key Fields | Description |
 |---|---|---|
@@ -259,7 +269,7 @@ ctf-platform/
 | `SystemSetting` | key, value | Platform configuration KV store |
 | `Log` | level, message, source, userId | Application event log |
 
-## 5.4 Enum Types
+## 5.5 Enum Types
 
 | Enum | Values |
 |---|---|
@@ -295,8 +305,11 @@ ctf-platform/
 | POST | `/api/challenges` | Admin | Create a challenge |
 | PUT | `/api/challenges/:id` | Admin | Update a challenge |
 | DELETE | `/api/challenges/:id` | Admin | Delete a challenge |
-| POST | `/api/challenges/submit` | User | Submit a flag |
-| POST | `/api/challenges/:id/upload` | Admin | Upload attachment |
+| GET | `/api/challenges/categories` | User | List unique challenge categories |
+| POST | `/api/challenges/submit` | User | Submit a flag (real-time broadcast) |
+| POST | `/api/challenges/upload` | Admin | Upload challenge attachment |
+| POST | `/api/challenges/upload-writeup` | Admin | Upload challenge writeup (PDF/MD) |
+| DELETE | `/api/challenges/:id/writeup` | Admin | Remove challenge writeup |
 
 ## 6.3 User Endpoints
 
@@ -315,7 +328,7 @@ ctf-platform/
 | POST | `/api/teams` | User | Create a new team |
 | GET | `/api/teams` | User | List all teams |
 | GET | `/api/teams/my` | User | Get own team |
-| POST | `/api/teams/join` | User | Join team with invite code |
+| POST | `/api/teams/join` | User | Join team with specific `teamId` |
 | POST | `/api/teams/leave` | User | Leave current team |
 
 ## 6.5 Education Endpoints
@@ -333,8 +346,9 @@ ctf-platform/
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/api/submissions/history` | User | User's attempt history |
-| GET | `/api/submissions/solves` | User | User's correct solves |
+| GET | `/api/submissions/history` | User | User's own attempt history |
+| GET | `/api/submissions/solves` | User | User's confirmed correct solves |
+| GET | `/api/submissions/all` | Admin | Global submission feed (paginated) |
 
 ---
 
@@ -352,7 +366,23 @@ ctf-platform/
 7. User status (ACTIVE/BANNED/TEMP_BANNED) is checked per-request
 ```
 
-## 7.2 Security Measures
+## 7.3 Dynamic Flag Generation
+
+BlackVault supports **individualized flags** to prevent flag sharing between participants.
+
+### Generation Logic
+Flags are generated using an HMAC-style approach:
+1.  **Input**: `userId` + `challengeId` + `JWT_SECRET` (server-side salt).
+2.  **Hashing**: A SHA-256 hash is computed from the combined string.
+3.  **Truncation**: The first 16 characters of the hex digest are used.
+4.  **Templating**: The hash is injected into a `flagTemplate` (e.g., `CTF{{hash}}`).
+
+### Verification & Persistence
+-   When a user views a dynamic challenge for the first time, their unique flag is generated and stored in the `UserChallengeFlag` table.
+-   Submissions are checked against this stored flag instead of the global challenge flag hash.
+-   If a flag template is not defined, it defaults to `CTF{<hash>}`.
+
+## 7.4 Security Measures
 
 | Measure | Implementation |
 |---|---|
@@ -906,8 +936,9 @@ The admin panel is accessible at `/admin` and requires a user with `Role = ADMIN
 1. Navigate to **Admin → Challenges**
 2. Click **"Initialize_Mission"**
 3. Fill in: Title, Category, Type (CHALLENGE/MACHINE), OS, Difficulty, Points, Flag, Description
-4. Optionally upload an attachment file
-5. Click **"Deploy_Mission"** to publish
+4. **Dynamic Config**: If using dynamic flags, toggle "isDynamic" and provide a `flagTemplate` (e.g., `CTF{{hash}}`)
+5. **Assets**: Optionally upload an attachment file and/or a writeup file (PDF/Markdown)
+6. Click **"Deploy_Mission"** to publish
 
 ## 14.3 Creating an Academy Module
 
@@ -928,11 +959,9 @@ The platform uses Socket.io for live updates without page refreshes.
 
 | Event | Direction | Trigger |
 |---|---|---|
-| `flag_submitted` | Server → Clients | A flag is submitted (correct or wrong) |
-| `solve_registered` | Server → Clients | A challenge is solved for the first time |
-| `leaderboard_update` | Server → Clients | Rankings change after a solve |
-| `notification` | Server → User | Personal notification to a specific user |
-| `maintenance_mode` | Server → Clients | Admin toggles maintenance mode |
+| `challenge:solved` | Server → Clients | A user correctly submits a flag (broadcast name, points, title) |
+| `notification` | Server → User | Administrative alert or status update to a specific user group |
+| `maintenance_mode` | Server → Clients | Admin toggles maintenance mode globally |
 
 ## 15.2 WebSocket Connection
 

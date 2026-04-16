@@ -367,8 +367,6 @@ export default function ChallengeDetailPage() {
           </div>
         </div>
       </div>
-
-      </div>
     </div>
   );
 }
