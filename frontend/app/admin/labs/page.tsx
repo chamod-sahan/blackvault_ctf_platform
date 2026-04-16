@@ -56,7 +56,6 @@ export default function ManageLabsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedWriteup, setSelectedWriteup] = useState<File | null>(null);
 
   const [form, setForm] = useState({
     title: '',
@@ -105,7 +104,6 @@ export default function ManageLabsPage() {
       flagTemplate: 'CTF{hash}',
     });
     setSelectedFile(null);
-    setSelectedWriteup(null);
   };
 
   const handleEdit = (challenge: Challenge) => {
@@ -172,13 +170,6 @@ export default function ManageLabsPage() {
         formData.append('file', selectedFile);
         formData.append('challengeId', challengeId);
         await challengeApi.uploadAttachment(formData);
-      }
-
-      if (selectedWriteup && challengeId) {
-        const formData = new FormData();
-        formData.append('file', selectedWriteup);
-        formData.append('challengeId', challengeId);
-        await challengeApi.uploadWriteup(formData);
       }
 
       setShowForm(false);
@@ -507,68 +498,35 @@ export default function ManageLabsPage() {
                 </div>
               )}
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Attachment_Package</label>
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1 relative group">
-                      <label className="flex h-12 items-center px-4 bg-background border border-purple-500/10 rounded-lg cursor-pointer hover:border-purple-500/30 transition-all">
-                        <Upload className="w-4 h-4 text-purple-500/40 mr-3" />
-                        <span className="text-sm font-mono text-muted-foreground truncate italic">
-                          {selectedFile ? selectedFile.name : 'UPLOAD_MISSION_ASSETS...'}
-                        </span>
-                        <input
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
-                        />
-                      </label>
-                    </div>
-                    {selectedFile && (
-                      <button
-                        type="button"
-                        onClick={() => setSelectedFile(null)}
-                        className="p-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-all"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Attachment_Package</label>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 relative group">
+                    <label className="flex h-12 items-center px-4 bg-background border border-purple-500/10 rounded-lg cursor-pointer hover:border-purple-500/30 transition-all">
+                      <Upload className="w-4 h-4 text-purple-500/40 mr-3" />
+                      <span className="text-sm font-mono text-muted-foreground truncate italic">
+                        {selectedFile ? selectedFile.name : 'UPLOAD_MISSION_ASSETS...'}
+                      </span>
+                      <input
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+                      />
+                    </label>
                   </div>
-                  <p className="text-[9px] font-mono text-muted-foreground/40 uppercase tracking-widest ml-1">
-                    SUPPORTS ZIP, PDF, AND BINARY EXECUTABLES (MAX 50MB)
-                  </p>
+                  {selectedFile && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFile(null)}
+                      className="p-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-all"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Writeup_Package</label>
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1 relative group">
-                      <label className="flex h-12 items-center px-4 bg-background border border-purple-500/10 rounded-lg cursor-pointer hover:border-purple-500/30 transition-all">
-                        <FileText className="w-4 h-4 text-purple-500/40 mr-3" />
-                        <span className="text-sm font-mono text-muted-foreground truncate italic">
-                          {selectedWriteup ? selectedWriteup.name : 'UPLOAD_WRITEUP...'}
-                        </span>
-                        <input
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => setSelectedWriteup(e.target.files ? e.target.files[0] : null)}
-                        />
-                      </label>
-                    </div>
-                    {selectedWriteup && (
-                      <button
-                        type="button"
-                        onClick={() => setSelectedWriteup(null)}
-                        className="p-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-all"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                  <p className="text-[9px] font-mono text-muted-foreground/40 uppercase tracking-widest ml-1">
-                    SUPPORTS ALL FORMATS (PDF, MD, ETC - MAX 50MB)
-                  </p>
-                </div>
+                <p className="text-[9px] font-mono text-muted-foreground/40 uppercase tracking-widest ml-1">
+                  SUPPORTS ZIP, PDF, AND BINARY EXECUTABLES (MAX 50MB)
+                </p>
               </div>
 
               <div className="flex gap-4 pt-6">

@@ -55,6 +55,7 @@ export const challengeApi = {
     api.post('/challenges/upload-writeup', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
+  deleteWriteup: (challengeId: string) => api.delete(`/challenges/${challengeId}/writeup`),
 };
 
 export const educationApi = {

@@ -1,4 +1,4 @@
-# CTF Platform
+# BlackVault Security
 
 A multi-user Capture The Flag (CTF) cybersecurity training platform similar to Hack The Box.
 

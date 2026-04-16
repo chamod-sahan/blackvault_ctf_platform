@@ -30,8 +30,8 @@ export default function Home() {
               <Shield className="w-6 h-6 text-primary" />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold tracking-tighter text-xl leading-none">CTF</span>
-              <span className="text-[10px] text-primary font-mono tracking-widest uppercase">Platform</span>
+              <span className="font-bold tracking-tighter text-xl leading-none uppercase">BlackVault</span>
+              <span className="text-[10px] text-primary font-mono tracking-widest uppercase">Security</span>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -183,7 +183,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Shield className="w-5 h-5" />
-            <span className="font-bold text-sm tracking-wider">CTF_PLATFORM</span>
+            <span className="font-bold text-sm tracking-wider">BLACKVAULT_SECURITY</span>
           </div>
           <div className="flex gap-8 text-sm text-muted-foreground">
             <Link href="#" className="hover:text-primary transition-colors">Privacy</Link>

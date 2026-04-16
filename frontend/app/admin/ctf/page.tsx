@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ctfApi } from '@/lib/api';
 import { useNotificationStore } from '@/lib/store';
+import { getAssetUrl } from '@/lib/utils';
 import {
   Plus,
   Trash2,
@@ -434,7 +435,11 @@ export default function ManageCtfPage() {
           <div className="htb-card max-w-sm w-full border-purple-500/30 animate-in zoom-in-95 duration-200 overflow-hidden p-0">
             {showShareModal.bannerUrl && (
               <div className="relative aspect-video border-b border-purple-500/20">
-                <img src={showShareModal.bannerUrl} alt="Banner" className="w-full h-full object-cover" />
+                <img 
+                  src={showShareModal.bannerUrl.startsWith('blob:') ? showShareModal.bannerUrl : getAssetUrl(showShareModal.bannerUrl)} 
+                  alt="Banner" 
+                  className="w-full h-full object-cover" 
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
                   <div className="text-[9px] font-black text-purple-500 uppercase tracking-widest mb-1 italic flex items-center gap-2">

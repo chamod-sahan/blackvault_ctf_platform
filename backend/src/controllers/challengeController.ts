@@ -266,6 +266,21 @@ export const challengeController = {
 
       const { challengeId } = req.body;
 
+      // Optional: Delete old file if exists
+      const oldChallenge = await prisma.challenge.findUnique({
+        where: { id: challengeId },
+        select: { writeupUrl: true },
+      });
+
+      if (oldChallenge?.writeupUrl) {
+        const oldFilePath = path.join(process.cwd(), oldChallenge.writeupUrl);
+        try {
+          await fs.unlink(oldFilePath);
+        } catch (e) {
+          // Ignore if file doesn't exist
+        }
+      }
+
       const challenge = await prisma.challenge.update({
         where: { id: challengeId },
         data: {
@@ -277,6 +292,43 @@ export const challengeController = {
       res.json({ challenge, fileUrl: `/uploads/${req.file.filename}` });
     } catch (error) {
       console.error('Upload writeup error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+
+  async deleteWriteup(req: AuthRequest, res: Response) {
+    try {
+      const { id } = req.params; // Challenge ID
+
+      const challenge = await prisma.challenge.findUnique({
+        where: { id },
+        select: { writeupUrl: true },
+      });
+
+      if (!challenge) {
+        return res.status(404).json({ error: 'Challenge not found' });
+      }
+
+      if (challenge.writeupUrl) {
+        const filePath = path.join(process.cwd(), challenge.writeupUrl);
+        try {
+          await fs.unlink(filePath);
+        } catch (e) {
+          // Ignore if file doesn't exist
+        }
+      }
+
+      await prisma.challenge.update({
+        where: { id },
+        data: {
+          writeupUrl: null,
+          writeupName: null,
+        },
+      });
+
+      res.json({ message: 'Writeup deleted successfully' });
+    } catch (error) {
+      console.error('Delete writeup error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },

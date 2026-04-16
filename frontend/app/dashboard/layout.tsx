@@ -26,6 +26,7 @@ import {
   GraduationCap,
   Map,
   Award,
+  FileText
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -37,6 +38,7 @@ const navItems = [
   { href: '/machines', label: 'MACHINES', icon: Server },
   { href: '/ctf', label: 'CTF EVENTS', icon: Trophy },
   { href: '/leaderboard', label: 'LEADERBOARD', icon: Award },
+  { href: '/writeups', label: 'WRITEUPS', icon: FileText },
 ];
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -91,8 +93,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <Shield className="w-6 h-6 text-primary" />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold tracking-tighter text-xl leading-none">CTF</span>
-              <span className="text-[10px] text-primary font-mono tracking-widest uppercase">Platform</span>
+              <span className="font-bold tracking-tighter text-xl leading-none uppercase">BlackVault</span>
+              <span className="text-[10px] text-primary font-mono tracking-widest uppercase">Security</span>
             </div>
           </Link>
           <button
@@ -224,7 +226,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             SYSTEM_STATUS: <span className="text-primary">OPERATIONAL</span>
           </div>
           <div className="text-[10px] font-mono tracking-widest uppercase">
-            © 2024 CTF_PLATFORM // SECURE_ACCESS_GRANTED
+            © 2024 BLACKVAULT_SECURITY // SECURE_ACCESS_GRANTED
           </div>
         </footer>
       </div>

@@ -37,7 +37,7 @@ async function main() {
   const challenges = [
     {
       title: 'Hello World',
-      description: 'Welcome to the CTF platform! Your first challenge is to find the flag. The flag format is CTF{...}',
+      description: 'Welcome to BlackVault Security! Your first challenge is to find the flag. The flag format is CTF{...}',
       category: 'Warmup',
       difficulty: 'EASY' as Difficulty,
       points: 10,

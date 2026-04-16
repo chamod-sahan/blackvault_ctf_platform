@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BlackVault CTF Platform — Technical Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green: #9fef00;
+      --green-dim: rgba(159,239,0,0.12);
+      --green-border: rgba(159,239,0,0.25);
+      --bg: #0d0e12;
+      --card: #141720;
+      --card2: #1a1e2a;
+      --border: rgba(255,255,255,0.06);
+      --text: #e2e8f0;
+      --muted: #6b7280;
+      --blue: #60a5fa;
+      --purple: #a78bfa;
+      --red: #f87171;
+      --yellow: #fbbf24;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.7;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ─── COVER PAGE ─────────────────────────────────────────── */
+    .cover {
+      min-height: 100vh;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(159,239,0,0.08) 0%, transparent 70%),
+                  radial-gradient(ellipse 60% 80% at 80% 100%, rgba(96,165,250,0.05) 0%, transparent 60%),
+                  var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 40px;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+    }
+    .cover::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(159,239,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(159,239,0,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .cover-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--green);
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      border: 1px solid var(--green-border);
+      padding: 6px 20px;
+      border-radius: 100px;
+      background: var(--green-dim);
+      margin-bottom: 36px;
+    }
+    .cover-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 68px;
+      font-weight: 900;
+      color: #fff;
+      text-align: center;
+      line-height: 1;
+      letter-spacing: -2px;
+      position: relative;
+      z-index: 1;
+    }
+    .cover-logo span { color: var(--green); }
+    .cover-subtitle {
+      font-size: 16px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 16px;
+      letter-spacing: 0.05em;
+      position: relative;
+      z-index: 1;
+    }
+    .cover-divider {
+      width: 120px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+      margin: 40px auto;
+      position: relative;
+      z-index: 1;
+    }
+    .cover-meta {
+      display: flex;
+      gap: 48px;
+      position: relative;
+      z-index: 1;
+    }
+    .cover-meta-item {
+      text-align: center;
+    }
+    .cover-meta-item .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+    .cover-meta-item .value {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--green);
+      margin-top: 4px;
+    }
+    .cover-tags {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 44px;
+      position: relative;
+      z-index: 1;
+    }
+    .cover-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 5px 14px;
+      border-radius: 6px;
+      background: var(--card);
+    }
+
+    /* ─── LAYOUT ────────────────────────────────────────────── */
+    .content {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 40px 80px;
+    }
+
+    /* ─── TOC ───────────────────────────────────────────────── */
+    .toc-page {
+      page-break-after: always;
+      padding: 48px 40px;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    .toc-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--green);
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .toc-heading {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 40px;
+    }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 40px;
+    }
+    .toc-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+    }
+    .toc-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--green);
+      width: 24px;
+      flex-shrink: 0;
+    }
+    .toc-dots { flex: 1; border-bottom: 1px dotted var(--border); margin: 0 6px; }
+    .toc-page-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    /* ─── CHAPTER HEADERS ───────────────────────────────────── */
+    .chapter {
+      page-break-before: always;
+    }
+    .chapter-banner {
+      background: linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
+      border: 1px solid var(--green-border);
+      border-radius: 16px;
+      padding: 36px 40px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .chapter-banner::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--green);
+      border-radius: 16px 0 0 16px;
+    }
+    .chapter-banner::after {
+      content: attr(data-num);
+      position: absolute;
+      right: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 80px;
+      font-weight: 900;
+      color: rgba(159,239,0,0.05);
+      line-height: 1;
+    }
+    .chapter-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--green);
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .chapter-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    /* ─── SECTION ELEMENTS ──────────────────────────────────── */
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin: 36px 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 18px;
+      background: var(--green);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--green);
+      margin: 24px 0 10px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    p {
+      color: #9ca3af;
+      margin-bottom: 12px;
+      line-height: 1.8;
+    }
+
+    /* ─── TABLES ────────────────────────────────────────────── */
+    .table-wrap {
+      margin: 20px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr {
+      background: linear-gradient(90deg, rgba(159,239,0,0.15), rgba(159,239,0,0.05));
+      border-bottom: 1px solid var(--green-border);
+    }
+    thead th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 12px 16px;
+      text-align: left;
+    }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+    tbody tr:hover { background: var(--green-dim); }
+    tbody td {
+      padding: 10px 16px;
+      color: var(--text);
+      font-size: 12px;
+      vertical-align: top;
+    }
+    td code, th code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: rgba(0,0,0,0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--green);
+    }
+    .badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+    .badge-green { background: rgba(159,239,0,0.15); color: var(--green); border: 1px solid var(--green-border); }
+    .badge-blue  { background: rgba(96,165,250,0.15); color: var(--blue); border: 1px solid rgba(96,165,250,0.3); }
+    .badge-purple{ background: rgba(167,139,250,0.15); color: var(--purple); border: 1px solid rgba(167,139,250,0.3); }
+    .badge-red   { background: rgba(248,113,113,0.15); color: var(--red);  border: 1px solid rgba(248,113,113,0.3); }
+    .badge-yellow{ background: rgba(251,191,36,0.15); color: var(--yellow);  border: 1px solid rgba(251,191,36,0.3); }
+
+    /* ─── CODE BLOCKS ───────────────────────────────────────── */
+    .code-block {
+      background: #080a0f;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 16px 0;
+      overflow: hidden;
+    }
+    .code-header {
+      background: var(--card2);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .code-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .code-dot-red { background: #ff5f56; }
+    .code-dot-yellow { background: #ffbd2e; }
+    .code-dot-green { background: #27c93f; }
+    .code-lang {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+    pre {
+      padding: 20px;
+      overflow-x: auto;
+    }
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: #c9d1d9;
+      line-height: 1.7;
+      white-space: pre;
+    }
+    .kw  { color: #ff79c6; }
+    .str { color: #f1fa8c; }
+    .cmt { color: #6272a4; }
+    .var { color: #8be9fd; }
+    .fn  { color: #50fa7b; }
+    .num { color: #bd93f9; }
+
+    /* ─── CALLOUT BOXES ─────────────────────────────────────── */
+    .callout {
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 20px 0;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .callout-icon { font-size: 18px; flex-shrink: 0; line-height: 1.4; }
+    .callout-text { font-size: 12px; color: var(--text); line-height: 1.7; }
+    .callout-text strong { display: block; font-weight: 700; margin-bottom: 4px; }
+    .callout-warning {
+      background: rgba(251,191,36,0.08);
+      border: 1px solid rgba(251,191,36,0.25);
+    }
+    .callout-info {
+      background: rgba(96,165,250,0.08);
+      border: 1px solid rgba(96,165,250,0.2);
+    }
+    .callout-danger {
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.25);
+    }
+    .callout-tip {
+      background: var(--green-dim);
+      border: 1px solid var(--green-border);
+    }
+
+    /* ─── ARCHITECTURE BOX ──────────────────────────────────── */
+    .arch-box {
+      background: #080a0f;
+      border: 1px solid var(--green-border);
+      border-radius: 12px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: #c9d1d9;
+      line-height: 1.8;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+
+    /* ─── STAT CARDS ────────────────────────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 24px 0;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+    .stat-card .stat-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--green);
+      line-height: 1;
+    }
+    .stat-card .stat-label {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ─── FEATURE GRID ──────────────────────────────────────── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .feature-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .feature-card h4 {
+      font-weight: 700;
+      font-size: 12px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .feature-card p {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* ─── ROADMAP ───────────────────────────────────────────── */
+    .roadmap-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      align-items: flex-start;
+    }
+    .roadmap-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+    .roadmap-content h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .roadmap-content p {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* ─── QUICK REFERENCE CARD ──────────────────────────────── */
+    .ref-card {
+      background: linear-gradient(135deg, #0a1a0a, #0d1a1a);
+      border: 1px solid var(--green-border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-top: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ref-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+    }
+    .ref-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 20px;
+    }
+    .ref-section h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--green);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .ref-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+    }
+    .ref-row .key { color: var(--muted); }
+    .ref-row .val { color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+
+    /* ─── FOOTER ────────────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      padding: 48px 40px;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+    .footer p {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* ─── PRINT STYLES ──────────────────────────────────────── */
+    @media print {
+      body { background: #0d0e12; }
+      .chapter { page-break-before: always; }
+      .no-break { page-break-inside: avoid; }
+    }
+
+    /* ─── SCROLLBAR ─────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━ COVER ━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="cover">
+  <div class="cover-badge">Classified: Internal Developer Reference</div>
+  <div class="cover-logo">Black<span>Vault</span></div>
+  <div class="cover-subtitle">CTF Platform — Complete Technical Documentation</div>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="label">Version</div>
+      <div class="value">1.0.0</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Released</div>
+      <div class="value">April 2026</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Classification</div>
+      <div class="value">Internal</div>
+    </div>
+  </div>
+  <div class="cover-tags">
+    <span class="cover-tag">Next.js 14</span>
+    <span class="cover-tag">Express.js</span>
+    <span class="cover-tag">Prisma ORM</span>
+    <span class="cover-tag">MySQL 8.0</span>
+    <span class="cover-tag">Redis 7</span>
+    <span class="cover-tag">Socket.io</span>
+    <span class="cover-tag">Docker</span>
+    <span class="cover-tag">Nginx</span>
+    <span class="cover-tag">TypeScript</span>
+    <span class="cover-tag">Terraform</span>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━ TOC ━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="toc-page">
+  <div class="toc-title">// navigation</div>
+  <div class="toc-heading">Table of Contents</div>
+  <div class="toc-grid">
+    <div class="toc-item"><span class="toc-num">01</span>Platform Overview<span class="toc-dots"></span><span class="toc-page-num">3</span></div>
+    <div class="toc-item"><span class="toc-num">02</span>System Architecture<span class="toc-dots"></span><span class="toc-page-num">4</span></div>
+    <div class="toc-item"><span class="toc-num">03</span>Technology Stack<span class="toc-dots"></span><span class="toc-page-num">5</span></div>
+    <div class="toc-item"><span class="toc-num">04</span>Project Structure<span class="toc-dots"></span><span class="toc-page-num">6</span></div>
+    <div class="toc-item"><span class="toc-num">05</span>Database Schema<span class="toc-dots"></span><span class="toc-page-num">7</span></div>
+    <div class="toc-item"><span class="toc-num">06</span>API Reference<span class="toc-dots"></span><span class="toc-page-num">8</span></div>
+    <div class="toc-item"><span class="toc-num">07</span>Security Architecture<span class="toc-dots"></span><span class="toc-page-num">9</span></div>
+    <div class="toc-item"><span class="toc-num">08</span>Running with Docker<span class="toc-dots"></span><span class="toc-page-num">10</span></div>
+    <div class="toc-item"><span class="toc-num">09</span>Local Development<span class="toc-dots"></span><span class="toc-page-num">11</span></div>
+    <div class="toc-item"><span class="toc-num">10</span>Linux Server Hosting<span class="toc-dots"></span><span class="toc-page-num">12</span></div>
+    <div class="toc-item"><span class="toc-num">11</span>Nginx & SSL Setup<span class="toc-dots"></span><span class="toc-page-num">13</span></div>
+    <div class="toc-item"><span class="toc-num">12</span>Environment Variables<span class="toc-dots"></span><span class="toc-page-num">14</span></div>
+    <div class="toc-item"><span class="toc-num">13</span>Default Credentials<span class="toc-dots"></span><span class="toc-page-num">15</span></div>
+    <div class="toc-item"><span class="toc-num">14</span>Admin Panel Guide<span class="toc-dots"></span><span class="toc-page-num">16</span></div>
+    <div class="toc-item"><span class="toc-num">15</span>Real-time & Socket.io<span class="toc-dots"></span><span class="toc-page-num">17</span></div>
+    <div class="toc-item"><span class="toc-num">16</span>Performance & Caching<span class="toc-dots"></span><span class="toc-page-num">17</span></div>
+    <div class="toc-item"><span class="toc-num">17</span>CI/CD & Terraform<span class="toc-dots"></span><span class="toc-page-num">18</span></div>
+    <div class="toc-item"><span class="toc-num">18</span>Troubleshooting<span class="toc-dots"></span><span class="toc-page-num">19</span></div>
+    <div class="toc-item"><span class="toc-num">19</span>Future Roadmap<span class="toc-dots"></span><span class="toc-page-num">20</span></div>
+    <div class="toc-item"><span class="toc-num">A</span>Quick Reference Card<span class="toc-dots"></span><span class="toc-page-num">21</span></div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 01 OVERVIEW ━━━━━━━━━━━━━━━━ -->
+<div class="content">
+<div class="chapter">
+  <div class="chapter-banner" data-num="01">
+    <div class="chapter-label">// chapter 01</div>
+    <div class="chapter-title">Platform Overview</div>
+  </div>
+
+  <p>BlackVault is a <strong style="color:#fff">multi-user Capture The Flag (CTF)</strong> cybersecurity training platform engineered in the spirit of Hack The Box. It provides a comprehensive hacking simulation environment where participants can sharpen offensive and defensive security skills through structured challenges, hands-on machines, learning paths, and academy modules.</p>
+
+  <div class="stats-grid no-break">
+    <div class="stat-card"><div class="stat-num">12+</div><div class="stat-label">Challenge Categories</div></div>
+    <div class="stat-card"><div class="stat-num">5</div><div class="stat-label">Docker Services</div></div>
+    <div class="stat-card"><div class="stat-num">14</div><div class="stat-label">DB Models</div></div>
+    <div class="stat-card"><div class="stat-num">25+</div><div class="stat-label">API Endpoints</div></div>
+  </div>
+
+  <h2>Core Capabilities</h2>
+  <div class="feature-grid no-break">
+    <div class="feature-card"><div class="feature-icon">🎯</div><div><h4>Challenge System</h4><p>Multi-category: Web, Pwn, Crypto, Forensics, Reverse Engineering</p></div></div>
+    <div class="feature-card"><div class="feature-icon">🖥️</div><div><h4>Machine Labs</h4><p>Full VM-style Windows & Linux machine challenges</p></div></div>
+    <div class="feature-card"><div class="feature-icon">📚</div><div><h4>Academy Modules</h4><p>Standalone educational content with integrated quiz assessments</p></div></div>
+    <div class="feature-card"><div class="feature-icon">🗺️</div><div><h4>Learning Paths</h4><p>Curated guided roadmaps through skill areas and specializations</p></div></div>
+    <div class="feature-card"><div class="feature-icon">🤝</div><div><h4>Team System</h4><p>Create or join squads, collaborate on challenges with teammates</p></div></div>
+    <div class="feature-card"><div class="feature-icon">🏆</div><div><h4>Live Leaderboards</h4><p>Real-time user and team rankings powered by Socket.io</p></div></div>
+    <div class="feature-card"><div class="feature-icon">🛡️</div><div><h4>Admin Panel</h4><p>Full CRUD management for challenges, users, and CTF events</p></div></div>
+    <div class="feature-card"><div class="feature-icon">🚩</div><div><h4>Flag Submission</h4><p>Secure, rate-limited flag validation with anti-sharing measures</p></div></div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 02 ARCHITECTURE ━━━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="02">
+    <div class="chapter-label">// chapter 02</div>
+    <div class="chapter-title">System Architecture</div>
+  </div>
+
+  <div class="arch-box">┌────────────────────────────────────────────────────────────────┐
+│                      CLIENT  BROWSER                           │
+└───────────────────────────┬────────────────────────────────────┘
+                            │  HTTP / HTTPS + WebSocket
+                            ▼
+┌────────────────────────────────────────────────────────────────┐
+│                    NGINX  REVERSE  PROXY                       │
+│             (Port 80 → HTTP)   (Port 443 → HTTPS)             │
+│   /          →  Frontend  (Next.js  :3000)                     │
+│   /api/*     →  Backend   (Express  :4000)                     │
+│   /socket.io →  Backend   (Socket.io WebSocket)               │
+│   /uploads/* →  Static File Serving (7-day cache)             │
+└────────────┬────────────────────────────────┬──────────────────┘
+             │                                │
+             ▼                                ▼
+┌────────────────────────┐    ┌───────────────────────────────────┐
+│  FRONTEND (Next.js 14) │    │    BACKEND (Node.js + Express)    │
+│  App Router / React 18 │    │  Prisma  │ Socket.io │ Zod │ JWT  │
+│  Zustand / Axios       │    │  bcrypt  │ Multer │ Rate Limiter  │
+│  TailwindCSS + Lucide  │    │  TypeScript ESM Modules           │
+└────────────────────────┘    └──────────┬──────────┬─────────────┘
+                                         │          │
+                          ┌──────────────┘          └──────────────┐
+                          ▼                                        ▼
+             ┌────────────────────────┐          ┌─────────────────────────┐
+             │    MySQL 8.0 Database  │          │    Redis 7  Cache       │
+             │  (Prisma-managed ORM)  │          │  Rate Limiting          │
+             │  Persistent Volume     │          │  Leaderboard Cache      │
+             └────────────────────────┘          └─────────────────────────┘</div>
+
+  <h2>Request Flow</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Path</th><th>Nginx Routes To</th><th>Port</th><th>Protocol</th></tr></thead>
+      <tbody>
+        <tr><td><code>/</code></td><td>Next.js Frontend</td><td>3000</td><td>HTTP/1.1</td></tr>
+        <tr><td><code>/api/*</code></td><td>Express Backend</td><td>4000</td><td>HTTP/1.1</td></tr>
+        <tr><td><code>/socket.io/*</code></td><td>Express + Socket.io</td><td>4000</td><td>WebSocket Upgrade</td></tr>
+        <tr><td><code>/uploads/*</code></td><td>Static Files on Disk</td><td>—</td><td>HTTP (cached 7d)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 03 TECH STACK ━━━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="03">
+    <div class="chapter-label">// chapter 03</div>
+    <div class="chapter-title">Technology Stack</div>
+  </div>
+
+  <h2>Frontend</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Package</th><th>Version</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>next</code></td><td><span class="badge badge-green">14.1.0</span></td><td>React Framework with App Router & SSR</td></tr>
+        <tr><td><code>react</code></td><td><span class="badge badge-blue">18.2.0</span></td><td>UI Component Library</td></tr>
+        <tr><td><code>typescript</code></td><td><span class="badge badge-blue">5.3.3</span></td><td>Static Type Safety & IDE Intelligence</td></tr>
+        <tr><td><code>tailwindcss</code></td><td><span class="badge badge-purple">3.4.1</span></td><td>Utility-First Styling Framework</td></tr>
+        <tr><td><code>zustand</code></td><td><span class="badge badge-green">4.5.0</span></td><td>Lightweight Global State Management</td></tr>
+        <tr><td><code>axios</code></td><td><span class="badge badge-blue">1.6.7</span></td><td>HTTP Client for REST API Calls</td></tr>
+        <tr><td><code>socket.io-client</code></td><td><span class="badge badge-yellow">4.7.4</span></td><td>Real-time WebSocket Communication</td></tr>
+        <tr><td><code>lucide-react</code></td><td><span class="badge badge-purple">0.323.0</span></td><td>Modern Icon Library (600+ icons)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Backend</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Package</th><th>Version</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>express</code></td><td><span class="badge badge-green">4.18.2</span></td><td>HTTP Server Framework (ESM Modules)</td></tr>
+        <tr><td><code>@prisma/client</code></td><td><span class="badge badge-blue">5.10.0</span></td><td>Type-Safe ORM + Database Access Layer</td></tr>
+        <tr><td><code>jsonwebtoken</code></td><td><span class="badge badge-yellow">9.0.2</span></td><td>JWT Token Signing & Verification</td></tr>
+        <tr><td><code>bcryptjs</code></td><td><span class="badge badge-green">2.4.3</span></td><td>Password Hashing (12 salt rounds)</td></tr>
+        <tr><td><code>socket.io</code></td><td><span class="badge badge-yellow">4.7.4</span></td><td>Real-time Bidirectional Event System</td></tr>
+        <tr><td><code>ioredis</code></td><td><span class="badge badge-red">5.3.2</span></td><td>Redis Client (caching + rate limits)</td></tr>
+        <tr><td><code>express-rate-limit</code></td><td><span class="badge badge-red">7.1.5</span></td><td>Rate Limiting Middleware</td></tr>
+        <tr><td><code>zod</code></td><td><span class="badge badge-purple">3.22.4</span></td><td>Runtime Schema Validation</td></tr>
+        <tr><td><code>multer</code></td><td><span class="badge badge-blue">1.4.5</span></td><td>File Upload Handling (challenges, images)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Infrastructure</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Technology</th><th>Version</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>MySQL</td><td><span class="badge badge-blue">8.0</span></td><td>Primary relational database (persistent Docker volume)</td></tr>
+        <tr><td>Redis</td><td><span class="badge badge-red">7 Alpine</span></td><td>In-memory caching, rate limiting counters</td></tr>
+        <tr><td>Docker Engine</td><td><span class="badge badge-blue">≥24.0</span></td><td>Container runtime for all services</td></tr>
+        <tr><td>Docker Compose</td><td><span class="badge badge-blue">≥2.0</span></td><td>Multi-container orchestration</td></tr>
+        <tr><td>Nginx</td><td><span class="badge badge-green">Alpine</span></td><td>Reverse proxy, SSL termination, static assets</td></tr>
+        <tr><td>Terraform</td><td><span class="badge badge-purple">≥1.5</span></td><td>GitHub Actions secrets + branch protection</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 04 STRUCTURE ━━━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="04">
+    <div class="chapter-label">// chapter 04</div>
+    <div class="chapter-title">Project Structure</div>
+  </div>
+
+  <div class="code-block no-break">
+    <div class="code-header">
+      <span class="code-dot code-dot-red"></span>
+      <span class="code-dot code-dot-yellow"></span>
+      <span class="code-dot code-dot-green"></span>
+      <span class="code-lang">DIRECTORY TREE</span>
+    </div>
+    <pre><code>ctf-platform/
+<span class="kw">├── backend/</span>                         <span class="cmt"># Express API Server (Node.js + TypeScript)</span>
+│   ├── prisma/schema.prisma           <span class="cmt"># Full database schema & migrations</span>
+│   └── src/
+│       ├── config/                    <span class="cmt"># Env loader, Prisma client singleton</span>
+│       ├── controllers/               <span class="cmt"># Business logic: auth, challenges, teams…</span>
+│       ├── middleware/auth.ts         <span class="cmt"># JWT auth + role guards (AuthRequest)</span>
+│       ├── routes/                    <span class="cmt"># Express router definitions</span>
+│       ├── services/redis.ts          <span class="cmt"># Redis connection singleton (ioredis)</span>
+│       ├── types/express.d.ts         <span class="cmt"># Express Request type extensions</span>
+│       ├── utils/seed.ts              <span class="cmt"># Database seeder (demo data)</span>
+│       └── server.ts                  <span class="cmt"># Application entry point</span>
+<span class="kw">├── frontend/</span>                        <span class="cmt"># Next.js 14 Application (App Router)</span>
+│   ├── app/
+│   │   ├── admin/                     <span class="cmt"># Admin-only pages (users, challenges, CTF)</span>
+│   │   ├── challenges/                <span class="cmt"># Challenge listing + detail pages</span>
+│   │   ├── academy/                   <span class="cmt"># Standalone module viewer</span>
+│   │   ├── learning-paths/            <span class="cmt"># Guided roadmap pages</span>
+│   │   ├── teams/                     <span class="cmt"># Team management (create/join/leave)</span>
+│   │   ├── leaderboard/               <span class="cmt"># Live rankings page</span>
+│   │   └── components/                <span class="cmt"># Shared UI: Navbar, CommandSearch…</span>
+│   └── lib/
+│       ├── api/                       <span class="cmt"># Axios-based API service wrappers</span>
+│       └── store/                     <span class="cmt"># Zustand state stores</span>
+<span class="kw">├── nginx/conf.d/default.conf</span>        <span class="cmt"># Upstream routing rules</span>
+<span class="kw">├── terraform/</span>                       <span class="cmt"># GitHub secrets + branch protection</span>
+<span class="kw">├── uploads/</span>                         <span class="cmt"># Challenge & module uploaded assets</span>
+└── docker-compose.yml                 <span class="cmt"># Full stack orchestration</span></code></pre>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 05 DATABASE ━━━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="05">
+    <div class="chapter-label">// chapter 05</div>
+    <div class="chapter-title">Database Schema</div>
+  </div>
+
+  <h2>Core Models</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Model</th><th>Key Fields</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:#9fef00">User</strong></td><td>id, username, email, role, status, points</td><td>Platform participant account</td></tr>
+        <tr><td><strong style="color:#9fef00">Challenge</strong></td><td>id, title, category, type, difficulty, flag</td><td>Individual task or machine</td></tr>
+        <tr><td><strong style="color:#9fef00">Submission</strong></td><td>id, userId, challengeId, correct</td><td>Every flag attempt logged</td></tr>
+        <tr><td><strong style="color:#9fef00">Solve</strong></td><td>id, userId, challengeId, points, solvedAt</td><td>Confirmed correct solve record</td></tr>
+        <tr><td><strong style="color:#9fef00">Team</strong></td><td>id, name</td><td>Collaborative squad</td></tr>
+        <tr><td><strong style="color:#9fef00">TeamMember</strong></td><td>userId, teamId, role</td><td>User-to-Team join table with role</td></tr>
+        <tr><td><strong style="color:#60a5fa">LearningPath</strong></td><td>id, title, difficulty, imageUrl</td><td>Curated learning roadmap</td></tr>
+        <tr><td><strong style="color:#60a5fa">AcademyModule</strong></td><td>id, title, content, category, type</td><td>Standalone educational lesson</td></tr>
+        <tr><td><strong style="color:#a78bfa">CtfEvent</strong></td><td>id, title, status, startTime, endTime</td><td>Competitive timed event</td></tr>
+        <tr><td><strong style="color:#a78bfa">Log</strong></td><td>level, message, source, userId</td><td>System audit and activity log</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Enum Types</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Enum</th><th>Values</th></tr></thead>
+      <tbody>
+        <tr><td><code>Role</code></td><td><span class="badge badge-green">USER</span> &nbsp;<span class="badge badge-red">ADMIN</span></td></tr>
+        <tr><td><code>UserStatus</code></td><td><span class="badge badge-green">ACTIVE</span> &nbsp;<span class="badge badge-red">BANNED</span> &nbsp;<span class="badge badge-yellow">TEMP_BANNED</span></td></tr>
+        <tr><td><code>Difficulty</code></td><td><span class="badge badge-green">EASY</span> &nbsp;<span class="badge badge-yellow">MEDIUM</span> &nbsp;<span class="badge badge-red">HARD</span> &nbsp;<span class="badge badge-purple">EXPERT</span></td></tr>
+        <tr><td><code>ChallengeType</code></td><td><span class="badge badge-blue">CHALLENGE</span> &nbsp;<span class="badge badge-purple">MACHINE</span></td></tr>
+        <tr><td><code>OperatingSystem</code></td><td><span class="badge badge-blue">WINDOWS</span> &nbsp;<span class="badge badge-green">LINUX</span> &nbsp;<span class="badge badge-yellow">OTHER</span></td></tr>
+        <tr><td><code>ModuleType</code></td><td><span class="badge badge-blue">READING</span> &nbsp;<span class="badge badge-purple">LAB</span> &nbsp;<span class="badge badge-yellow">VIDEO</span></td></tr>
+        <tr><td><code>TeamRole</code></td><td><span class="badge badge-yellow">LEADER</span> &nbsp;<span class="badge badge-green">MEMBER</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 06 API ━━━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="06">
+    <div class="chapter-label">// chapter 06</div>
+    <div class="chapter-title">API Reference</div>
+  </div>
+
+  <h2>Authentication</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/auth/register</code></td><td>Public</td><td>Register new user account</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/auth/login</code></td><td>Public</td><td>Authenticate & set HttpOnly cookie</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/auth/logout</code></td><td>User</td><td>Clear JWT authentication cookie</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/auth/me</code></td><td>User</td><td>Return current authenticated user</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Challenges</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/challenges</code></td><td>User</td><td>List all challenges with filters</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/challenges/:id</code></td><td>User</td><td>Get single challenge details</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/challenges</code></td><td>Admin</td><td>Create a new challenge</td></tr>
+        <tr><td><span class="badge badge-yellow">PUT</span></td><td><code>/api/challenges/:id</code></td><td>Admin</td><td>Update existing challenge</td></tr>
+        <tr><td><span class="badge badge-red">DELETE</span></td><td><code>/api/challenges/:id</code></td><td>Admin</td><td>Permanently delete challenge</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/challenges/submit</code></td><td>User</td><td>Submit a flag (rate-limited)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Teams & Users</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/teams</code></td><td>User</td><td>Create a new team</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/teams</code></td><td>User</td><td>List all teams (global registry)</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/teams/join</code></td><td>User</td><td>Join team with invite code</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/teams/leave</code></td><td>User</td><td>Leave current team</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/users/leaderboard/users</code></td><td>Public</td><td>User rankings by score</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/users/leaderboard/teams</code></td><td>Public</td><td>Team rankings by combined score</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 07 SECURITY ━━━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="07">
+    <div class="chapter-label">// chapter 07</div>
+    <div class="chapter-title">Security Architecture</div>
+  </div>
+
+  <h2>Authentication Flow</h2>
+  <div class="arch-box">1. User POSTs credentials (email + password)
+   └─▶ Zod schema validation (reject malformed input)
+
+2. Backend calls: bcrypt.compare(password, user.passwordHash)
+   └─▶ 12 salt rounds — resistant to brute-force attacks
+
+3. On success: jwt.sign({ id, username, role }, JWT_SECRET, { expiresIn: '7d' })
+   └─▶ HS256 signed token
+
+4. Token set as:  Set-Cookie: token=...; HttpOnly; SameSite=Lax; Secure
+   └─▶ Inaccessible to JavaScript (XSS-safe)
+
+5. Every subsequent request: cookie sent automatically by browser
+
+6. Middleware verifies:
+   - Signature validity  →  reject invalid/tampered tokens
+   - User still exists   →  reject deleted accounts
+   - Status check        →  reject BANNED / TEMP_BANNED accounts
+   - Maintenance mode    →  block non-ADMIN during maintenance</div>
+
+  <h2>Security Measures</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Measure</th><th>Implementation</th><th>Threat Mitigated</th></tr></thead>
+      <tbody>
+        <tr><td>Password Hashing</td><td>bcrypt (12 rounds)</td><td>Database breach</td></tr>
+        <tr><td>JWT HttpOnly Cookies</td><td>cookie-parser, SameSite=Lax</td><td>XSS, CSRF</td></tr>
+        <tr><td>Input Validation</td><td>Zod schemas on all POST/PUT</td><td>Injection attacks</td></tr>
+        <tr><td>SQL Injection</td><td>Prisma parameterized queries</td><td>SQL Injection</td></tr>
+        <tr><td>Rate Limiting</td><td>express-rate-limit on submissions</td><td>Brute-force flags</td></tr>
+        <tr><td>CORS Policy</td><td>Strict origin whitelist (FRONTEND_URL)</td><td>Cross-origin attacks</td></tr>
+        <tr><td>Role Guards</td><td>authenticate + requireAdmin middleware</td><td>Privilege escalation</td></tr>
+        <tr><td>Ban System</td><td>BANNED / TEMP_BANNED with auto-lift</td><td>Abusive users</td></tr>
+        <tr><td>XSS Protection</td><td>React JSX escaping (built-in)</td><td>Stored/reflected XSS</td></tr>
+        <tr><td>Security Headers</td><td>Nginx: HSTS, X-Frame-Options</td><td>Clickjacking, MITM</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━ 08 DOCKER ━━━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="08">
+    <div class="chapter-label">// chapter 08</div>
+    <div class="chapter-title">Running with Docker</div>
+  </div>
+
+  <div class="callout callout-tip">
+    <div class="callout-icon">✅</div>
+    <div class="callout-text"><strong>Recommended Approach</strong>Docker Compose is the fastest way to get the full platform running — no manual database setup required.</div>
+  </div>
+
+  <h2>Prerequisites</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Requirement</th><th>Minimum Version</th></tr></thead>
+      <tbody>
+        <tr><td>Docker Engine</td><td>24.0+</td></tr>
+        <tr><td>Docker Compose</td><td>2.0+</td></tr>
+        <tr><td>Git</td><td>Any recent</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Quick Start (3 Commands)</h2>
+  <div class="code-block no-break">
+    <div class="code-header">
+      <span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span>
+      <span class="code-lang">BASH</span>
+    </div>
+    <pre><code><span class="cmt"># 1. Clone and enter project</span>
+<span class="fn">git</span> clone https://github.com/your-org/ctf-platform.git
+<span class="fn">cd</span> ctf-platform
+
+<span class="cmt"># 2. Configure environment</span>
+<span class="fn">cp</span> backend/.env.example backend/.env
+<span class="cmt"># Edit backend/.env and set JWT_SECRET, DATABASE_URL etc.</span>
+
+<span class="cmt"># 3. Launch full stack (MySQL, Redis, Backend, Frontend, Nginx)</span>
+<span class="fn">docker</span> compose up -d
+
+<span class="cmt"># 4. Seed demo data (optional)</span>
+<span class="fn">docker</span> compose exec backend npm run db:seed</code></pre>
+  </div>
+
+  <h2>Service URLs</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Service</th><th>URL</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Platform (via Nginx)</td><td><code>http://localhost</code></td><td>Primary access point</td></tr>
+        <tr><td>Frontend (direct)</td><td><code>http://localhost:3000</code></td><td>Next.js dev server</td></tr>
+        <tr><td>Backend API (direct)</td><td><code>http://localhost:4000</code></td><td>Express REST API</td></tr>
+        <tr><td>MySQL</td><td><code>localhost:3307</code></td><td>Exposed on host port 3307</td></tr>
+        <tr><td>Redis</td><td><code>localhost:6379</code></td><td>Standard Redis port</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Essential Docker Commands</h2>
+  <div class="code-block no-break">
+    <div class="code-header">
+      <span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span>
+      <span class="code-lang">BASH</span>
+    </div>
+    <pre><code><span class="fn">docker</span> compose ps                          <span class="cmt"># Check service health</span>
+<span class="fn">docker</span> compose logs -f                     <span class="cmt"># Live logs (all services)</span>
+<span class="fn">docker</span> compose logs -f backend             <span class="cmt"># Backend logs only</span>
+<span class="fn">docker</span> compose down                        <span class="cmt"># Stop all services</span>
+<span class="fn">docker</span> compose down -v                     <span class="cmt"># Stop + delete all data</span>
+<span class="fn">docker</span> compose up -d --build              <span class="cmt"># Rebuild after code changes</span>
+<span class="fn">docker</span> compose exec backend sh            <span class="cmt"># Shell into backend container</span>
+<span class="fn">docker</span> compose exec backend npx prisma studio  <span class="cmt"># Visual DB browser</span></code></pre>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━ 09 LOCAL DEV ━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="09">
+    <div class="chapter-label">// chapter 09</div>
+    <div class="chapter-title">Local Development (No Docker)</div>
+  </div>
+
+  <h2>Databases via Docker (Recommended)</h2>
+  <div class="code-block no-break">
+    <div class="code-header"><span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span><span class="code-lang">BASH</span></div>
+    <pre><code><span class="cmt"># Start MySQL</span>
+<span class="fn">docker</span> run -d --name ctf-mysql \
+  -e MYSQL_ROOT_PASSWORD=your_password \
+  -e MYSQL_DATABASE=ctf_platform \
+  -p 3306:3306 mysql:8.0
+
+<span class="cmt"># Start Redis</span>
+<span class="fn">docker</span> run -d --name ctf-redis -p 6379:6379 redis:7-alpine</code></pre>
+  </div>
+
+  <h2>Backend Setup</h2>
+  <div class="code-block no-break">
+    <div class="code-header"><span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span><span class="code-lang">BASH</span></div>
+    <pre><code><span class="fn">cd</span> backend
+<span class="fn">npm</span> install
+<span class="fn">cp</span> .env.example .env       <span class="cmt"># Configure DATABASE_URL, REDIS_URL, JWT_SECRET</span>
+<span class="fn">npx</span> prisma generate         <span class="cmt"># Generate type-safe Prisma client</span>
+<span class="fn">npx</span> prisma db push          <span class="cmt"># Sync schema to database (creates all tables)</span>
+<span class="fn">npm</span> run db:seed             <span class="cmt"># Populate demo challenges & accounts</span>
+<span class="fn">npm</span> run dev                 <span class="cmt"># Start with hot-reload → http://localhost:4000</span></code></pre>
+  </div>
+
+  <h2>Frontend Setup</h2>
+  <div class="code-block no-break">
+    <div class="code-header"><span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span><span class="code-lang">BASH</span></div>
+    <pre><code><span class="fn">cd</span> frontend
+<span class="fn">npm</span> install
+<span class="str">echo</span> <span class="str">"NEXT_PUBLIC_API_URL=http://localhost:4000"</span> > .env.local
+<span class="fn">npm</span> run dev                 <span class="cmt"># Next.js dev server → http://localhost:3000</span></code></pre>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━ 10 LINUX HOSTING ━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="10">
+    <div class="chapter-label">// chapter 10</div>
+    <div class="chapter-title">Production Hosting on Linux</div>
+  </div>
+
+  <h2>Recommended Server Specs</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Resource</th><th>Minimum</th><th>Recommended</th></tr></thead>
+      <tbody>
+        <tr><td>OS</td><td>Ubuntu 22.04 LTS</td><td>Ubuntu 22.04 LTS</td></tr>
+        <tr><td>CPU</td><td>2 vCPU</td><td>4 vCPU</td></tr>
+        <tr><td>RAM</td><td>2 GB</td><td>4–8 GB</td></tr>
+        <tr><td>Storage</td><td>20 GB SSD</td><td>50+ GB SSD</td></tr>
+        <tr><td>Network</td><td>100 Mbps</td><td>1 Gbps</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Step 1 — Server Setup</h2>
+  <div class="code-block no-break">
+    <div class="code-header"><span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span><span class="code-lang">BASH</span></div>
+    <pre><code>sudo apt update && sudo apt upgrade -y
+sudo apt install -y git curl wget ufw fail2ban
+
+<span class="cmt"># Configure firewall</span>
+sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable</code></pre>
+  </div>
+
+  <h2>Step 2 — Install Docker</h2>
+  <div class="code-block no-break">
+    <div class="code-header"><span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span><span class="code-lang">BASH</span></div>
+    <pre><code>curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker $USER
+newgrp docker</code></pre>
+  </div>
+
+  <h2>Step 3 — Deploy Application</h2>
+  <div class="code-block no-break">
+    <div class="code-header"><span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span><span class="code-lang">BASH</span></div>
+    <pre><code>git clone https://github.com/your-org/ctf-platform.git /opt/ctf-platform
+cd /opt/ctf-platform
+cp backend/.env.example backend/.env
+nano backend/.env        <span class="cmt"># Set production values (see Chapter 12)</span>
+docker compose up -d
+docker compose exec backend npm run db:seed</code></pre>
+  </div>
+
+  <h2>Step 4 — Systemd Auto-start Service</h2>
+  <div class="code-block no-break">
+    <div class="code-header"><span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span><span class="code-lang">/etc/systemd/system/ctf-platform.service</span></div>
+    <pre><code><span class="kw">[Unit]</span>
+Description=CTF Platform
+After=docker.service
+Requires=docker.service
+
+<span class="kw">[Service]</span>
+WorkingDirectory=/opt/ctf-platform
+ExecStart=/usr/bin/docker compose up
+ExecStop=/usr/bin/docker compose down
+Restart=always
+User=deployer
+
+<span class="kw">[Install]</span>
+WantedBy=multi-user.target</code></pre>
+  </div>
+  <div class="code-block no-break">
+    <div class="code-header"><span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span><span class="code-lang">BASH</span></div>
+    <pre><code>sudo systemctl daemon-reload
+sudo systemctl enable ctf-platform
+sudo systemctl start ctf-platform</code></pre>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━ 11 NGINX SSL ━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="11">
+    <div class="chapter-label">// chapter 11</div>
+    <div class="chapter-title">Nginx & SSL Setup</div>
+  </div>
+
+  <h2>Free SSL with Let's Encrypt</h2>
+  <div class="code-block no-break">
+    <div class="code-header"><span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span><span class="code-lang">BASH</span></div>
+    <pre><code>sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+sudo certbot renew --dry-run    <span class="cmt"># Verify auto-renewal works</span></code></pre>
+  </div>
+
+  <h2>Production Nginx Config</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span><span class="code-lang">nginx/conf.d/default.conf</span></div>
+    <pre><code><span class="cmt"># Redirect HTTP → HTTPS</span>
+server {
+    listen 80;
+    server_name your-domain.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name your-domain.com;
+
+    ssl_certificate     /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+
+    <span class="cmt"># Security Headers</span>
+    add_header Strict-Transport-Security <span class="str">"max-age=31536000"</span>;
+    add_header X-Frame-Options <span class="str">"SAMEORIGIN"</span>;
+    add_header X-Content-Type-Options <span class="str">"nosniff"</span>;
+
+    location /       { proxy_pass http://frontend; }
+    location /api/   { proxy_pass http://backend;  }
+    location /socket.io/ {
+        proxy_pass http://backend;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection <span class="str">"upgrade"</span>;
+        proxy_read_timeout 86400s;
+    }
+    location /uploads/ { alias /uploads/; expires 7d; }
+}</code></pre>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━ 12 ENV VARS ━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="12">
+    <div class="chapter-label">// chapter 12</div>
+    <div class="chapter-title">Environment Variables</div>
+  </div>
+
+  <h2>Backend (.env)</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Variable</th><th>Required</th><th>Example Value</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>DATABASE_URL</code></td><td><span class="badge badge-red">YES</span></td><td><code>mysql://root:pass@mysql:3306/ctf</code></td><td>Prisma connection string</td></tr>
+        <tr><td><code>REDIS_URL</code></td><td><span class="badge badge-red">YES</span></td><td><code>redis://redis:6379</code></td><td>Redis connection URL</td></tr>
+        <tr><td><code>JWT_SECRET</code></td><td><span class="badge badge-red">YES</span></td><td><code>64+ random chars</code></td><td>Token signing key — never share</td></tr>
+        <tr><td><code>JWT_EXPIRES_IN</code></td><td><span class="badge badge-green">NO</span></td><td><code>7d</code></td><td>Token expiry duration</td></tr>
+        <tr><td><code>FRONTEND_URL</code></td><td><span class="badge badge-red">YES</span></td><td><code>https://your-domain.com</code></td><td>CORS whitelist origin</td></tr>
+        <tr><td><code>PORT</code></td><td><span class="badge badge-green">NO</span></td><td><code>4000</code></td><td>Backend HTTP server port</td></tr>
+        <tr><td><code>NODE_ENV</code></td><td><span class="badge badge-green">NO</span></td><td><code>production</code></td><td>Runtime environment mode</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Frontend (.env.local)</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Variable</th><th>Required</th><th>Example</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>NEXT_PUBLIC_API_URL</code></td><td><span class="badge badge-red">YES</span></td><td><code>https://your-domain.com</code></td><td>Public API URL (sent to browser)</td></tr>
+        <tr><td><code>BACKEND_URL</code></td><td><span class="badge badge-green">NO</span></td><td><code>http://backend:4000</code></td><td>Internal server-to-server URL</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-danger">
+    <div class="callout-icon">🚨</div>
+    <div class="callout-text"><strong>Critical Security Warning</strong>Never commit <code>.env</code> files to source control. Add <code>backend/.env</code> and <code>frontend/.env.local</code> to <code>.gitignore</code>. Use a minimum 64-character random string for <code>JWT_SECRET</code> in production.</div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━ 13 CREDENTIALS ━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="13">
+    <div class="chapter-label">// chapter 13</div>
+    <div class="chapter-title">Default Credentials & Seed Data</div>
+  </div>
+
+  <div class="callout callout-warning">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-text"><strong>Change Before Going Live</strong>The default credentials below are for development only. Change the admin password and user password immediately in any environment accessible to real users.</div>
+  </div>
+
+  <h2>Default Accounts</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-red">ADMIN</span></td><td><code>admin@ctf.platform</code></td><td><code>admin123</code></td></tr>
+        <tr><td><span class="badge badge-green">USER</span></td><td><code>user@ctf.platform</code></td><td><code>user123</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Seeded Challenges</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Title</th><th>Category</th><th>Difficulty</th><th>Points</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>Hello World</td><td>Warmup</td><td><span class="badge badge-green">EASY</span></td><td>10</td><td>CHALLENGE</td></tr>
+        <tr><td>Basic SQL Injection</td><td>Web</td><td><span class="badge badge-green">EASY</span></td><td>50</td><td>CHALLENGE</td></tr>
+        <tr><td>RSA Basics</td><td>Crypto</td><td><span class="badge badge-green">EASY</span></td><td>75</td><td>CHALLENGE</td></tr>
+        <tr><td>Hidden in Plain Sight</td><td>Forensics</td><td><span class="badge badge-green">EASY</span></td><td>50</td><td>CHALLENGE</td></tr>
+        <tr><td>JWT Vulnerabilities</td><td>Web</td><td><span class="badge badge-yellow">MEDIUM</span></td><td>125</td><td>CHALLENGE</td></tr>
+        <tr><td>Buffer Overflow 101</td><td>Pwn</td><td><span class="badge badge-yellow">MEDIUM</span></td><td>100</td><td>CHALLENGE</td></tr>
+        <tr><td>Network Traffic Analysis</td><td>Forensics</td><td><span class="badge badge-yellow">MEDIUM</span></td><td>100</td><td>CHALLENGE</td></tr>
+        <tr><td>XSS Playground</td><td>Web</td><td><span class="badge badge-yellow">MEDIUM</span></td><td>150</td><td>CHALLENGE</td></tr>
+        <tr><td>Legacy Linux</td><td>Linux</td><td><span class="badge badge-yellow">MEDIUM</span></td><td>150</td><td>MACHINE</td></tr>
+        <tr><td>Active Directory 101</td><td>Windows</td><td><span class="badge badge-red">HARD</span></td><td>250</td><td>MACHINE</td></tr>
+        <tr><td>Advanced Reverse Engineering</td><td>Reverse</td><td><span class="badge badge-red">HARD</span></td><td>300</td><td>CHALLENGE</td></tr>
+        <tr><td>Heap Exploitation</td><td>Pwn</td><td><span class="badge badge-purple">EXPERT</span></td><td>500</td><td>CHALLENGE</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━ 14 ADMIN GUIDE ━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="14">
+    <div class="chapter-label">// chapter 14</div>
+    <div class="chapter-title">Admin Panel Guide</div>
+  </div>
+
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Section</th><th>URL</th><th>Capabilities</th></tr></thead>
+      <tbody>
+        <tr><td>Dashboard</td><td><code>/admin</code></td><td>Platform stats overview</td></tr>
+        <tr><td>Users</td><td><code>/admin/users</code></td><td>View, ban (permanent/temp), reset accounts</td></tr>
+        <tr><td>Challenges</td><td><code>/admin/challenges</code></td><td>Create, edit, delete challenges; upload attachments</td></tr>
+        <tr><td>Academy</td><td><code>/admin/academy</code></td><td>Manage modules, add quiz questions, upload cover images</td></tr>
+        <tr><td>CTF Events</td><td><code>/admin/ctf-events</code></td><td>Create timed events with solo/team registration</td></tr>
+        <tr><td>System Logs</td><td><code>/admin/logs</code></td><td>View INFO/WARN/ERROR system activity</td></tr>
+        <tr><td>Settings</td><td><code>/admin/settings</code></td><td>Toggle maintenance mode, global configs</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━ 15-16 REALTIME + PERF ━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="15">
+    <div class="chapter-label">// chapter 15 & 16</div>
+    <div class="chapter-title">Real-time & Performance</div>
+  </div>
+
+  <h2>Socket.io Events</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Event</th><th>Direction</th><th>Trigger</th></tr></thead>
+      <tbody>
+        <tr><td><code>flag_submitted</code></td><td>Server → Clients</td><td>Any flag submission (correct or wrong)</td></tr>
+        <tr><td><code>solve_registered</code></td><td>Server → Clients</td><td>First-time challenge solve</td></tr>
+        <tr><td><code>leaderboard_update</code></td><td>Server → Clients</td><td>Rankings change after a solve</td></tr>
+        <tr><td><code>notification</code></td><td>Server → User</td><td>Personal notification to specific socket</td></tr>
+        <tr><td><code>maintenance_mode</code></td><td>Server → All</td><td>Admin toggles maintenance on/off</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Caching Strategy</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Data</th><th>Store</th><th>TTL</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>Leaderboard Rankings</td><td>Redis</td><td>60s</td><td>Avoid heavy SQL aggregation per request</td></tr>
+        <tr><td>Rate Limit Counters</td><td>Redis</td><td>Per-window</td><td>Track flag submission frequency per user</td></tr>
+        <tr><td>Uploaded Static Files</td><td>Nginx</td><td>7 days</td><td>Cache-Control: public, immutable</td></tr>
+        <tr><td>Next.js Static Assets</td><td>Browser</td><td>Indefinite</td><td>Content-hash-based immutable URLs</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━ 17 CI/CD ━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="17">
+    <div class="chapter-label">// chapter 17</div>
+    <div class="chapter-title">CI/CD & Terraform</div>
+  </div>
+
+  <h2>GitHub Actions Deploy Workflow</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-dot code-dot-red"></span><span class="code-dot code-dot-yellow"></span><span class="code-dot code-dot-green"></span><span class="code-lang">.github/workflows/deploy.yml</span></div>
+    <pre><code><span class="var">name</span>: Deploy to Production
+<span class="kw">on</span>:
+  push:
+    branches: [main]
+<span class="kw">jobs</span>:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/ctf-platform
+            git pull origin main
+            docker compose up -d --build</code></pre>
+  </div>
+
+  <h2>Terraform Resources</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Resource</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>github_actions_secret.jwt_secret</code></td><td>Injects JWT_SECRET into GitHub Actions securely</td></tr>
+        <tr><td><code>github_branch_protection.main</code></td><td>Requires CI status checks + PR review before merge</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━ 18 TROUBLESHOOTING ━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="18">
+    <div class="chapter-label">// chapter 18</div>
+    <div class="chapter-title">Troubleshooting</div>
+  </div>
+
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Symptom</th><th>Likely Cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Backend fails to start</td><td>MySQL not ready yet</td><td>Wait for healthcheck; run <code>docker compose ps</code></td></tr>
+        <tr><td>Prisma client not generated</td><td>Missing <code>prisma generate</code></td><td>Run <code>docker compose exec backend npx prisma generate</code></td></tr>
+        <tr><td>Frontend blank page</td><td>Wrong <code>NEXT_PUBLIC_API_URL</code></td><td>Set env to point to correct backend host</td></tr>
+        <tr><td>WebSocket disconnects</td><td>Nginx timeout too short</td><td>Increase <code>proxy_read_timeout</code> in nginx config</td></tr>
+        <tr><td>Upload fails</td><td>Missing <code>uploads/</code> dir</td><td>Run <code>mkdir -p uploads && chmod 777 uploads</code></td></tr>
+        <tr><td>Rate limit triggers</td><td>Too many flag attempts</td><td>Wait 15 min or adjust limits in <code>authController.ts</code></td></tr>
+        <tr><td>Redis ECONNREFUSED</td><td>Redis container down</td><td>Run <code>docker compose restart redis</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━ 19 ROADMAP ━━━━━━━━━━━━━━ -->
+<div class="chapter">
+  <div class="chapter-banner" data-num="19">
+    <div class="chapter-label">// chapter 19</div>
+    <div class="chapter-title">Future Roadmap</div>
+  </div>
+
+  <h2>High Priority Features</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Feature</th><th>Description</th><th>Effort</th></tr></thead>
+      <tbody>
+        <tr><td>🔑 Dynamic Flags</td><td>Per-user unique flags to prevent flag sharing between teammates</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+        <tr><td>🐳 Docker Runners</td><td>Spin up isolated containers per user for machine-type challenges</td><td><span class="badge badge-red">High</span></td></tr>
+        <tr><td>📧 Email Verification</td><td>SMTP-based account verification on registration</td><td><span class="badge badge-green">Low</span></td></tr>
+        <tr><td>🔐 Two-Factor Auth (2FA)</td><td>TOTP-based 2FA compatible with Google Authenticator</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+        <tr><td>🎮 Discord OAuth</td><td>Social login via Discord (extremely popular in CTF community)</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Gameplay Enhancements</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Feature</th><th>Description</th><th>Effort</th></tr></thead>
+      <tbody>
+        <tr><td>📉 Point Decay</td><td>First-blood bonuses; points decrease as more teams solve a challenge</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+        <tr><td>💡 Hint System</td><td>Purchasable hints that deduct a configurable number of points</td><td><span class="badge badge-green">Low</span></td></tr>
+        <tr><td>🏅 Achievement Badges</td><td>Gamification: badges for milestones (First Blood, 50 Solves, etc.)</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+        <tr><td>⭐ Challenge Ratings</td><td>Users rate challenge quality (1–5 stars) after solving</td><td><span class="badge badge-green">Low</span></td></tr>
+        <tr><td>🏆 Scoreboard Freeze</td><td>Freeze leaderboard 1h before CTF end (standard competitive practice)</td><td><span class="badge badge-green">Low</span></td></tr>
+        <tr><td>📜 Certificate Generator</td><td>Auto-generated PDF certificates on CTF event completion</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+        <tr><td>✍️ Writeup System</td><td>Allow users to submit challenge writeups after CTF ends</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Infrastructure & Scaling</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Feature</th><th>Description</th><th>Effort</th></tr></thead>
+      <tbody>
+        <tr><td>☸️ Kubernetes (K8s)</td><td>Helm chart for scalable multi-pod deployment</td><td><span class="badge badge-red">High</span></td></tr>
+        <tr><td>☁️ CDN Integration</td><td>Cloudflare for static assets, DDoS protection, edge caching</td><td><span class="badge badge-green">Low</span></td></tr>
+        <tr><td>📊 Prometheus + Grafana</td><td>Metrics collection and real-time monitoring dashboards</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+        <tr><td>🧪 Automated Testing</td><td>Jest unit tests + Playwright end-to-end browser tests</td><td><span class="badge badge-red">High</span></td></tr>
+        <tr><td>💾 Automated Backups</td><td>Scheduled MySQL dumps to S3 or remote storage</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+        <tr><td>🔵🟢 Blue/Green Deploy</td><td>Zero-downtime deployments via container swaps</td><td><span class="badge badge-red">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Community Features</h2>
+  <div class="table-wrap no-break">
+    <table>
+      <thead><tr><th>Feature</th><th>Description</th><th>Effort</th></tr></thead>
+      <tbody>
+        <tr><td>💬 Global Chat</td><td>Real-time community chat channel (Discord-style)</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+        <tr><td>🤫 Team Messaging</td><td>Private squad chat visible only to team members</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+        <tr><td>👤 Public Profiles</td><td>Public user profile with solve history, badges, country flag</td><td><span class="badge badge-green">Low</span></td></tr>
+        <tr><td>🌐 CTF Registry</td><td>Curated list of upcoming CTF events (CTFtime.org integration)</td><td><span class="badge badge-yellow">Medium</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━ QUICK REFERENCE ━━━━━━━━━━━━━ -->
+<div class="ref-card">
+  <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--green); letter-spacing:0.3em; text-transform:uppercase;">// appendix A — Quick Reference</div>
+  <div style="font-family:'Orbitron',sans-serif; font-size:22px; font-weight:700; color:#fff; margin-top:8px;">BlackVault CTF — Cheat Sheet</div>
+
+  <div class="ref-grid">
+    <div class="ref-section">
+      <h4>Docker Commands</h4>
+      <div class="ref-row"><span class="key">Start stack</span><span class="val">docker compose up -d</span></div>
+      <div class="ref-row"><span class="key">Stop stack</span><span class="val">docker compose down</span></div>
+      <div class="ref-row"><span class="key">Full reset</span><span class="val">docker compose down -v</span></div>
+      <div class="ref-row"><span class="key">Live logs</span><span class="val">docker compose logs -f</span></div>
+      <div class="ref-row"><span class="key">Rebuild images</span><span class="val">docker compose up -d --build</span></div>
+      <div class="ref-row"><span class="key">Seed database</span><span class="val">exec backend npm run db:seed</span></div>
+    </div>
+    <div class="ref-section">
+      <h4>Service URLs</h4>
+      <div class="ref-row"><span class="key">Main (Nginx)</span><span class="val">http://localhost</span></div>
+      <div class="ref-row"><span class="key">Frontend</span><span class="val">http://localhost:3000</span></div>
+      <div class="ref-row"><span class="key">Backend API</span><span class="val">http://localhost:4000</span></div>
+      <div class="ref-row"><span class="key">MySQL</span><span class="val">localhost:3307</span></div>
+      <div class="ref-row"><span class="key">Redis</span><span class="val">localhost:6379</span></div>
+    </div>
+    <div class="ref-section">
+      <h4>Default Admin</h4>
+      <div class="ref-row"><span class="key">Email</span><span class="val">admin@ctf.platform</span></div>
+      <div class="ref-row"><span class="key">Password</span><span class="val">admin123</span></div>
+    </div>
+    <div class="ref-section">
+      <h4>Default User</h4>
+      <div class="ref-row"><span class="key">Email</span><span class="val">user@ctf.platform</span></div>
+      <div class="ref-row"><span class="key">Password</span><span class="val">user123</span></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .content -->
+
+<!-- ━━━━━━━━━━━━━━ FOOTER ━━━━━━━━━━━━━━ -->
+<div class="footer">
+  <p>BlackVault CTF Platform — Technical Documentation v1.0.0</p>
+  <p style="margin-top:6px; opacity:0.5">Next.js 14 · Express.js · Prisma · MySQL 8.0 · Redis 7 · Socket.io · Docker · Nginx</p>
+</div>
+
+</body>
+</html>

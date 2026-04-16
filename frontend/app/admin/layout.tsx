@@ -25,6 +25,7 @@ import {
   Map as MapIcon,
   GraduationCap,
   Trophy,
+  FileText
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -34,6 +35,7 @@ const adminNavItems = [
   { href: '/admin/academy', label: 'ACADEMY', icon: GraduationCap },
   { href: '/admin/learning-paths', label: 'LEARNING PATHS', icon: MapIcon },
   { href: '/admin/ctf', label: 'CTF EVENTS', icon: Trophy },
+  { href: '/admin/writeups', label: 'UPLOAD WRITEUPS', icon: FileText },
   { href: '/admin/users', label: 'OPERATORS', icon: Users },
   { href: '/admin/submissions', label: 'SUBMISSIONS', icon: History },
   { href: '/admin/settings', label: 'SYSTEM SETTINGS', icon: Settings },
@@ -209,7 +211,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             System_Status: <span className="text-purple-500/60">Fully_Synchronized</span>
           </div>
           <div className="text-[10px] font-mono tracking-widest uppercase">
-            © 2024 CTF_PLATFORM // ADMIN_UI_V5
+            © 2024 BLACKVAULT_SECURITY // ADMIN_UI_V5
           </div>
         </footer>
       </div>

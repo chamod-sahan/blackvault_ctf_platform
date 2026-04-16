@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { challengeApi } from '@/lib/api';
 import { useNotificationStore } from '@/lib/store';
+import { getAssetUrl } from '@/lib/utils';
 import {
   Download,
   Lock,
@@ -18,10 +19,7 @@ import {
   Copy,
   Check,
   Zap,
-  KeyRound,
-  Eye,
-  X,
-  FileText
+  KeyRound
 } from 'lucide-react';
 
 interface ChallengeDetail {
@@ -38,8 +36,6 @@ interface ChallengeDetail {
   dockerImage?: string;
   attachmentUrl?: string;
   attachmentName?: string;
-  writeupUrl?: string;
-  writeupName?: string;
 }
 
 const difficultyConfig: Record<string, { color: string, segments: number }> = {
@@ -58,7 +54,6 @@ export default function ChallengeDetailPage() {
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [copiedFlag, setCopiedFlag] = useState(false);
-  const [showWriteup, setShowWriteup] = useState(false);
 
   useEffect(() => {
     const fetchChallenge = async () => {
@@ -217,28 +212,18 @@ export default function ChallengeDetailPage() {
                 </div>
               </div>
 
-              <div className="mt-8 pt-8 border-t border-htb-border flex gap-4 flex-wrap">
-                {challenge.attachmentUrl && (
+              {challenge.attachmentUrl && (
+                <div className="mt-8 pt-8 border-t border-htb-border">
                   <a
-                    href={challenge.attachmentUrl}
+                    href={getAssetUrl(challenge.attachmentUrl)}
                     download={challenge.attachmentName}
                     className="htb-button-secondary inline-flex items-center gap-3 w-auto group shadow-glow-green"
                   >
                     <Download className="w-5 h-5 text-primary group-hover:animate-bounce" />
                     DOWNLOAD_ASSETS
                   </a>
-                )}
-
-                {challenge.writeupUrl && (
-                  <button
-                    onClick={() => setShowWriteup(true)}
-                    className="htb-button-secondary inline-flex items-center gap-3 w-auto group shadow-glow-green border-purple-500/50 text-purple-500 hover:bg-purple-500/10 hover:text-purple-400"
-                  >
-                    <Eye className="w-5 h-5 group-hover:animate-pulse" />
-                    VIEW_INTEL_REPORT
-                  </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -383,65 +368,7 @@ export default function ChallengeDetailPage() {
         </div>
       </div>
 
-      {/* Writeup Modal */}
-      {showWriteup && challenge.writeupUrl && (
-        <div className="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex flex-col animate-in fade-in duration-300" onContextMenu={(e) => e.preventDefault()}>
-          <div className="flex items-center justify-between p-4 border-b border-purple-500/20 bg-background/50">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-500/10 border border-purple-500/30 rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-purple-500" />
-              </div>
-              <div>
-                <h2 className="text-purple-500 font-bold uppercase tracking-widest text-sm flex items-center gap-2">
-                  <Eye className="w-4 h-4" /> INTEL_REPORT_VIEWER
-                </h2>
-                <p className="text-[10px] text-muted-foreground font-mono truncate max-w-sm">
-                  {challenge.writeupName} // CLASSIFIED
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-[9px] font-mono text-purple-500/40 uppercase tracking-widest border border-purple-500/20 px-2 py-1 rounded bg-purple-500/5 hidden sm:block">
-                SECURE_VIEWER_ENCLAVE_ACTIVE
-              </span>
-              <button
-                onClick={() => setShowWriteup(false)}
-                className="w-10 h-10 flex items-center justify-center hover:bg-red-500/10 text-muted-foreground hover:text-red-500 rounded-lg transition-colors"
-                title="Close Viewer"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-          </div>
-
-          <div className="flex-1 relative bg-black/50 overflow-hidden group">
-            {/* Overlay to catch and prevent right clicks and dragging across the iframe */}
-            <div className="absolute inset-0 z-10 pointer-events-none group-hover:bg-purple-500/5 transition-colors duration-1000 mix-blend-overlay" />
-            
-            <iframe
-              src={`${challenge.writeupUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-              className="w-full h-full border-none"
-              title="Writeup Viewer"
-              style={{
-                pointerEvents: challenge.writeupUrl.toLowerCase().endsWith('.pdf') ? 'auto' : 'none'
-              }}
-              sandbox="allow-same-origin allow-scripts"
-            />
-            
-            {!challenge.writeupUrl.toLowerCase().endsWith('.pdf') && (
-               <div 
-                 className="absolute inset-0 flex items-center justify-center -z-10"
-                 style={{ 
-                   backgroundImage: `url(${challenge.writeupUrl})`, 
-                   backgroundSize: 'contain', 
-                   backgroundPosition: 'center', 
-                   backgroundRepeat: 'no-repeat' 
-                 }} 
-               />
-            )}
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

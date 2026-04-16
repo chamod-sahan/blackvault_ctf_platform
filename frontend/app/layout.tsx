@@ -3,7 +3,7 @@ import './globals.css';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'CTF Platform - Capture The Flag',
+  title: 'BlackVault Security - Capture The Flag',
   description: 'A cybersecurity training platform',
 };
 
