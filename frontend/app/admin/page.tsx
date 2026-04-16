@@ -110,14 +110,14 @@ export default function AdminOverviewPage() {
           { label: 'DEACTIVATE_LABS', value: stats.expired, icon: Flag, color: 'text-red-500' },
           { label: 'SYSTEM_SOLVES', value: stats.solves, icon: TrendingUp, color: 'text-orange-500' },
         ].map((stat, i) => (
-          <div key={i} className="htb-card border-purple-500/10 group relative overflow-hidden p-6 hover:translate-y-[-2px] transition-all">
-             <div className="flex items-center justify-between">
-                <div>
-                   <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] mb-1">{stat.label}</p>
+          <div key={i} className="htb-card border-purple-500/10 group relative overflow-hidden p-5 xl:p-6 hover:translate-y-[-2px] transition-all">
+             <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                   <p className="text-[9px] md:text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-1 leading-tight">{stat.label}</p>
                    <p className="text-3xl sm:text-4xl font-black italic tracking-tighter">{stat.value}</p>
                 </div>
-                <div className={`w-14 h-14 rounded-2xl bg-muted/30 flex items-center justify-center border border-purple-500/10 transition-colors group-hover:border-purple-500/30 ${stat.color}`}>
-                   <stat.icon className="w-7 h-7" />
+                <div className={`shrink-0 w-12 h-12 lg:w-14 lg:h-14 rounded-2xl bg-muted/30 flex items-center justify-center border border-purple-500/10 transition-colors group-hover:border-purple-500/30 ${stat.color}`}>
+                   <stat.icon className="w-6 h-6 lg:w-7 lg:h-7" />
                 </div>
              </div>
              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />

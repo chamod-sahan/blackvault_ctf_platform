@@ -9,7 +9,8 @@
     "start": "node dist/server.js",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:seed": "tsx src/utils/seed.ts"
+    "db:seed": "tsx src/utils/seed.ts",
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@prisma/client": "^5.10.0",

@@ -93,7 +93,7 @@ export default function LeaderboardPage() {
   const others = filteredLeaderboard.slice(3);
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
+    <div className="space-y-10 animate-in fade-in duration-700 px-6 md:px-10 py-8">
       {/* Header Section */}
       <div className="relative group">
         <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-transparent rounded-2xl blur-xl opacity-50" />

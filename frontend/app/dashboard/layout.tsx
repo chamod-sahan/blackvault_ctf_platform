@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { BackButton } from '@/app/components/BackButton';
 import { usePathname, useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
@@ -212,6 +213,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
         {/* Content */}
         <main className="flex-1 px-8 lg:px-16 py-10 max-w-[1600px] mx-auto w-full">
+          <BackButton />
           {children}
         </main>
         

@@ -115,14 +115,14 @@ export default function DashboardPage() {
           { label: 'TOTAL_OPERATORS', value: stats.users, icon: Users, color: 'text-purple-500' },
           { label: 'GLOBAL_BREAKS', value: stats.solves, icon: TrendingUp, color: 'text-orange-500' },
         ].map((stat, i) => (
-          <div key={i} className="htb-card group relative overflow-hidden p-8 hover:translate-y-[-4px] transition-all duration-300">
-             <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                   <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-[0.2em] font-bold">{stat.label}</p>
-                   <p className="text-4xl sm:text-5xl font-black italic tracking-tighter leading-none">{stat.value}</p>
+          <div key={i} className="htb-card group relative overflow-hidden p-5 lg:p-6 hover:translate-y-[-4px] transition-all duration-300">
+             <div className="flex items-center justify-between gap-3">
+                <div className="space-y-2 min-w-0 flex-1">
+                   <p className="text-[9px] md:text-[10px] 2xl:text-[11px] font-mono text-muted-foreground uppercase tracking-widest font-bold leading-tight">{stat.label}</p>
+                   <p className="text-3xl sm:text-4xl 2xl:text-5xl font-black italic tracking-tighter leading-none">{stat.value}</p>
                 </div>
-                <div className={`w-16 h-16 rounded-2xl bg-muted/30 flex items-center justify-center border border-htb-border group-hover:border-primary/30 transition-colors ${stat.color} shadow-inner`}>
-                   <stat.icon className="w-8 h-8" />
+                <div className={`w-12 h-12 lg:w-14 lg:h-14 2xl:w-16 2xl:h-16 shrink-0 rounded-2xl bg-muted/30 flex items-center justify-center border border-htb-border group-hover:border-primary/30 transition-colors ${stat.color} shadow-inner`}>
+                   <stat.icon className="w-6 h-6 lg:w-7 lg:h-7 2xl:w-8 2xl:h-8" />
                 </div>
              </div>
              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
