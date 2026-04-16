@@ -52,8 +52,9 @@ export const authController = {
       const token = jwt.sign(
         { id: user.id, username: user.username, role: user.role },
         config.jwtSecret,
-        { expiresIn: config.jwtExpiresIn }
+        { expiresIn: config.jwtExpiresIn as any }
       );
+
 
       res.cookie('token', token, {
         httpOnly: true,
@@ -93,8 +94,9 @@ export const authController = {
       const token = jwt.sign(
         { id: user.id, username: user.username, role: user.role },
         config.jwtSecret,
-        { expiresIn: config.jwtExpiresIn }
+        { expiresIn: config.jwtExpiresIn as any }
       );
+
 
       res.cookie('token', token, {
         httpOnly: true,

@@ -243,7 +243,7 @@ export default function ManageAcademyPage() {
                      </button>
                      <div className="flex gap-2">
                         <button 
-                          onClick={() => { setEditingId(mod.id); setForm({...mod}); setShowForm(true); }}
+                          onClick={() => { setEditingId(mod.id); setForm({...mod, imageUrl: mod.imageUrl || ''}); setShowForm(true); }}
                           className="p-2.5 bg-secondary border border-border rounded-xl hover:border-purple-500/50 hover:text-purple-500 transition-all"
                         >
                            <Edit className="w-5 h-5" />

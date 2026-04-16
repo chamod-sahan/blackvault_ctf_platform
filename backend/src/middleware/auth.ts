@@ -2,13 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/env.js';
 import { prisma } from '../config/prisma.js';
+import { Role, UserStatus } from '@prisma/client';
 
 export interface AuthRequest extends Request {
   user?: {
     id: string;
     username: string;
-    role: string;
-    status: string;
+    role: Role;
+    status: UserStatus;
     bannedUntil?: Date | null;
   };
 }

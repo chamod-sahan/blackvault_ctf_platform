@@ -1,12 +1,16 @@
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import { config } from '../config/env.js';
 
-export const redis = new Redis(config.redisUrl, {
+// Use the URL constructor if config.redisUrl is a full connection string,
+// or pass it as the first argument and options as the second.
+// ioredis typically handles Redis(url, options) if the URL is a string.
+// However, the error TS2769 suggests the overload is not matching.
+// We'll try passing it as a single options object if it's a URL or use the string directly.
+
+export const redis = new (Redis as any)(config.redisUrl, {
   maxRetriesPerRequest: 3,
-  retryDelayOnFailover: 100,
   lazyConnect: true,
-  maxRetriesPerRequest: 3,
-  reconnectOnError: (err) => {
+  reconnectOnError: (err: Error) => {
     const targetError = 'READONLY';
     if (err.message.includes(targetError)) {
       return true;
@@ -15,7 +19,7 @@ export const redis = new Redis(config.redisUrl, {
   }
 });
 
-redis.on('error', (err) => {
+redis.on('error', (err: any) => {
   // Silence connection errors to allow backend to start without Redis
   if (err.code === 'ECONNREFUSED') {
     return;
@@ -49,7 +53,7 @@ export const redisService = {
   async getRank(type: 'users' | 'teams', userId: string) {
     try {
       const rank = await redis.zrevrank(`leaderboard:${type}`, userId);
-      return rank !== null ? rank + 1 : null;
+      return rank !== null ? (rank as number) + 1 : null;
     } catch (error) {
       return null;
     }

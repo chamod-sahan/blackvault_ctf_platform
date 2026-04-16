@@ -13,6 +13,7 @@ import {
   X,
   Command,
   ChevronRight,
+  ChevronDown,
   Loader2
 } from 'lucide-react';
 import { challengeApi } from '@/lib/api';
